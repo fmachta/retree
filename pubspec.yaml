@@ -34,7 +34,10 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^1.0.2
+  firebase_core: ^2.15.1
+  firebase_auth: ^4.7.3
+  cloud_firestore: ^4.8.5
 
 dev_dependencies:
   flutter_test:
@@ -58,7 +61,7 @@ flutter:
     - assets/snake_icon.png
     - assets/pong_icon.png
   fonts:
-    - family: joystix_monospace  # Name you’ll use in code (can be anything)
+    - family: joystix_monospace  # Name you'll use in code (can be anything)
       fonts:
         - asset: fonts/joystix_monospace.otf  # Path to your .otf file
 

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'animated_background.dart'; // Ensure this exists
 import 'gameselectionscreen.dart';
+import '../highscores/highscores_screen.dart';
+import '../profile/profile_screen.dart';
+import '../../services/auth_service.dart';
 
 class StartScreen extends StatefulWidget {
   const StartScreen({super.key});
@@ -10,6 +13,7 @@ class StartScreen extends StatefulWidget {
 }
 
 class _StartScreenState extends State<StartScreen> with SingleTickerProviderStateMixin {
+  final AuthService _authService = AuthService();
   late AnimationController _controller;
   late Animation<double> _titleAnimation;
   late Animation<double> _buttonAnimation;
@@ -53,6 +57,30 @@ class _StartScreenState extends State<StartScreen> with SingleTickerProviderStat
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          // Show login icon or user profile icon
+          IconButton(
+            icon: Icon(
+              _authService.currentUser != null ? Icons.person : Icons.login,
+              color: Colors.greenAccent,
+            ),
+            tooltip: _authService.currentUser != null ? 'Profile' : 'Sign In',
+            onPressed: () {
+              if (_authService.currentUser != null) {
+                // Navigate to profile
+                Navigator.pushNamed(context, '/profile');
+              } else {
+                // Navigate to auth screen
+                Navigator.pushNamed(context, '/auth');
+              }
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: Stack(
         children: [
           const AnimatedBackground(),
@@ -194,20 +222,52 @@ class _StartScreenState extends State<StartScreen> with SingleTickerProviderStat
                                     Icons.emoji_events,
                                     Colors.pinkAccent,
                                     onPressed: () {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            'High scores coming soon!',
-                                            style: TextStyle(
-                                              fontFamily: 'joystix_monospace',
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                          backgroundColor: Colors.pinkAccent,
-                                          behavior: SnackBarBehavior.floating,
+                                      Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          pageBuilder: (context, animation, secondaryAnimation) => const HighScoresScreen(),
+                                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                            return FadeTransition(
+                                              opacity: animation,
+                                              child: child,
+                                            );
+                                          },
+                                          transitionDuration: const Duration(milliseconds: 500),
                                         ),
                                       );
                                     },
+                                  ),
+                                  const SizedBox(height: 15),
+                                  _buildButton(
+                                    'PROFILE',
+                                    Icons.person,
+                                    Colors.orangeAccent,
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          pageBuilder: (context, animation, secondaryAnimation) => const ProfileScreen(),
+                                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                            return FadeTransition(
+                                              opacity: animation,
+                                              child: child,
+                                            );
+                                          },
+                                          transitionDuration: const Duration(milliseconds: 500),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  const SizedBox(height: 10),
+                                  TextButton.icon(
+                                    onPressed: () async {
+                                      await _authService.signOut();
+                                    },
+                                    icon: const Icon(Icons.logout, color: Colors.white70),
+                                    label: const Text(
+                                      'SIGN OUT',
+                                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                                    ),
                                   ),
                                 ],
                               ),

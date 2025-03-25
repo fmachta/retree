@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math';
+import '../../services/highscore_service.dart';
+import '../../services/auth_service.dart';
+import '../highscores/highscores_screen.dart';
 
 class SnakeGame extends StatefulWidget {
   const SnakeGame({super.key});
@@ -11,6 +14,10 @@ class SnakeGame extends StatefulWidget {
 
 class _SnakeGameState extends State<SnakeGame> with TickerProviderStateMixin {
   static const int gridSize = 20;
+  
+  // Services
+  final HighScoreService _highScoreService = HighScoreService();
+  final AuthService _authService = AuthService();
   
   // Game state
   late int gridWidth;
@@ -31,6 +38,7 @@ class _SnakeGameState extends State<SnakeGame> with TickerProviderStateMixin {
   static const int minSpeed = 70;
   int level = 1;
   int lastLevelUpScore = 0;
+  bool _isSavingScore = false;
   
   // Animation controllers
   late AnimationController _pulseController;
@@ -68,6 +76,9 @@ class _SnakeGameState extends State<SnakeGame> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    
+    // Load high score
+    _loadHighScore();
     
     // Set up pulsing animation for food
     _pulseController = AnimationController(
@@ -108,6 +119,21 @@ class _SnakeGameState extends State<SnakeGame> with TickerProviderStateMixin {
     _pulseController.dispose();
     _snakeController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadHighScore() async {
+    try {
+      if (_authService.currentUser != null) {
+        final userHighScore = await _highScoreService.getUserGameHighScore('Snake');
+        if (userHighScore != null) {
+          setState(() {
+            highScore = userHighScore;
+          });
+        }
+      }
+    } catch (e) {
+      print('Error loading high score: $e');
+    }
   }
 
   void _startGame() {
@@ -168,6 +194,8 @@ class _SnakeGameState extends State<SnakeGame> with TickerProviderStateMixin {
   }
 
   void _moveSnake() {
+    if (!mounted) return;
+    
     setState(() {
       // Update direction only at movement time to prevent multiple turns in single frame
       direction = newDirection;
@@ -175,6 +203,7 @@ class _SnakeGameState extends State<SnakeGame> with TickerProviderStateMixin {
       Offset head = snake.first;
       Offset newHead;
 
+      // Determine new head based on direction
       switch (direction) {
         case 'up':
           newHead = Offset(head.dx, head.dy - 1);
@@ -206,11 +235,22 @@ class _SnakeGameState extends State<SnakeGame> with TickerProviderStateMixin {
       // Check for self collision
       if (snake.contains(newHead)) {
         isGameOver = true;
+        _isSavingScore = true;
         gameTimer?.cancel();
         
         // Update high score
         if (score > highScore) {
           highScore = score;
+          
+          // Save to Firebase if authenticated
+          if (_authService.currentUser != null) {
+            _saveHighScore();
+          } else {
+            // Just update local state if not authenticated
+            _isSavingScore = false;
+          }
+        } else {
+          _isSavingScore = false;
         }
         
         return;
@@ -218,28 +258,44 @@ class _SnakeGameState extends State<SnakeGame> with TickerProviderStateMixin {
 
       snake.insert(0, newHead);
       if (newHead == food) {
-        // Eat food
-        score += (currentFood['score'] as int);
+        // Increase score and speed based on food type
+        score += currentFood['score'] as int;
         
-        // Update level and speed
-        int newLevel = (score ~/ 100) + 1;
+        // Update level based on score
+        final newLevel = (score / 100).floor() + 1;
         if (newLevel > level) {
           level = newLevel;
+          lastLevelUpScore = score;
           
-          // Update speed based on level
-          int newSpeed = 200 - (level * 10);
-          // Ensure speed doesn't go below minimum
-          speed = newSpeed < minSpeed ? minSpeed : newSpeed;
-          
-          // Reset timer with new speed
-          _restartGameTimer();
+          // Increase speed (decrease delay)
+          if (speed > minSpeed) {
+            speed = speed - speedIncrement;
+            _restartGameTimer();
+          }
         }
         
+        // Spawn new food
         _spawnFood();
       } else {
+        // Remove tail if not eating
         snake.removeLast();
       }
     });
+  }
+
+  // Add a separate method to save high score asynchronously
+  Future<void> _saveHighScore() async {
+    try {
+      await _highScoreService.saveUserHighScore('Snake', score);
+    } catch (e) {
+      print('Error saving high score: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSavingScore = false;
+        });
+      }
+    }
   }
 
   void _handleVerticalDragStart(DragStartDetails details) {
@@ -823,34 +879,101 @@ class _SnakeGameState extends State<SnakeGame> with TickerProviderStateMixin {
             ),
             const SizedBox(height: 10),
             if (score >= highScore && score > 0)
-              const Text(
-                'NEW HIGH SCORE!',
-                style: TextStyle(
-                  color: Colors.yellowAccent,
-                  fontSize: 16,
-                  fontFamily: 'joystix_monospace',
-                  fontWeight: FontWeight.bold,
-                ),
+              Column(
+                children: [
+                  const Text(
+                    'NEW HIGH SCORE!',
+                    style: TextStyle(
+                      color: Colors.yellowAccent,
+                      fontSize: 16,
+                      fontFamily: 'joystix_monospace',
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (_authService.currentUser == null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: TextButton.icon(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/auth');
+                        },
+                        icon: const Icon(Icons.login, color: Colors.greenAccent, size: 16),
+                        label: const Text(
+                          'SIGN IN TO SAVE',
+                          style: TextStyle(color: Colors.greenAccent, fontSize: 12),
+                        ),
+                      ),
+                    ),
+                  if (_isSavingScore)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        SizedBox(
+                          width: 12,
+                          height: 12,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.greenAccent,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Saving score...',
+                          style: TextStyle(
+                            color: Colors.greenAccent,
+                            fontSize: 12,
+                            fontFamily: 'joystix_monospace',
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
               ),
             const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: _startGame,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.greenAccent,
-                foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: _startGame,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.greenAccent,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'PLAY AGAIN',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: 'joystix_monospace',
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
-              child: const Text(
-                'PLAY AGAIN',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontFamily: 'joystix_monospace',
-                  fontWeight: FontWeight.bold,
+                const SizedBox(width: 15),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/highscores', arguments: 'Snake');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'LEADERBOARD',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: 'joystix_monospace',
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ],
         ),

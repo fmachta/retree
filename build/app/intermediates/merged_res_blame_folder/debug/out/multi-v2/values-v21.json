@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.retree.app-mergeDebugResources-24:/values-v21/values-v21.xml",
+            "outputFile": "com.example.retree.app-mergeDebugResources-29:/values-v21/values-v21.xml",
             "map": [
                 {
-                    "source": "/Users/ferasmachta/.gradle/caches/transforms-3/9560b4392b8a1575165d2e7541c36546/transformed/core-1.13.1/res/values-v21/values-v21.xml",
+                    "source": "/Users/ferasmachta/.gradle/caches/transforms-3/3e4fa42964ec6369b3a52ce840a46646/transformed/core-1.13.1/res/values-v21/values-v21.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,13",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4",

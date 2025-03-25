@@ -1,12 +1,67 @@
 import 'package:flutter/material.dart';
-import 'screens/start_screen/startscreen.dart'; // Adjust path if in a subdirectory like 'screens/start_screen/startscreen.dart'
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
+import 'dart:ui';
+import 'firebase_options.dart';
+import 'screens/auth/auth_wrapper.dart';
+import 'screens/highscores/highscores_screen.dart';
+import 'screens/profile/profile_screen.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Flag to track Firebase initialization
+  bool firebaseInitialized = false;
+  
+  try {
+    // Initialize Firebase with your project configuration
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    firebaseInitialized = true;
+    print("Firebase successfully initialized");
+  } catch (e) {
+    print("Failed to initialize Firebase: $e");
+    // Continue with the app but in offline mode
+  }
+  
+  // Catch any uncaught Flutter errors
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    print('FlutterError: ${details.exception}');
+  };
+
+  // Catch any errors that occur during widget building
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    print('ErrorWidget: ${details.exception}');
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Material(
+        color: Colors.red,
+        child: Center(
+          child: Text(
+            'An error occurred: ${details.exception}',
+            style: const TextStyle(color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  };
+
+  // Handle uncaught asynchronous errors
+  PlatformDispatcher.instance.onError = (error, stack) {
+    print('PlatformDispatcher error: $error\n$stack');
+    return true;
+  };
+  
+  runApp(MyApp(firebaseInitialized: firebaseInitialized));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool firebaseInitialized;
+  
+  const MyApp({super.key, this.firebaseInitialized = false});
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +118,13 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const StartScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => AuthWrapper(firebaseInitialized: firebaseInitialized),
+        '/auth': (context) => AuthWrapper(requireAuth: true, firebaseInitialized: firebaseInitialized),
+        '/highscores': (context) => HighScoresScreen(firebaseInitialized: firebaseInitialized),
+        '/profile': (context) => const ProfileScreen(),
+      },
       debugShowCheckedModeBanner: false,
     );
   }

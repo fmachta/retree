@@ -415,36 +415,43 @@ class _PacmanGameState extends State<PacmanGame> with SingleTickerProviderStateM
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Score
-                  Text(
-                    'SCORE: $score',
-                    style: const TextStyle(
-                      color: Colors.yellow,
-                      fontFamily: 'joystix_monospace',
-                      fontSize: 18,
+                  Flexible(
+                    flex: 2,
+                    child: Text(
+                      'SCORE: $score',
+                      style: const TextStyle(
+                        color: Colors.yellow,
+                        fontFamily: 'joystix_monospace',
+                        fontSize: 16,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  const SizedBox(width: 8),
                   // Lives
-                  Row(
-                    children: [
-                      const Text(
-                        'LIVES: ',
-                        style: TextStyle(
-                          color: Colors.yellow,
-                          fontFamily: 'joystix_monospace',
-                          fontSize: 18,
-                        ),
-                      ),
-                      Row(
-                        children: List.generate(
-                          lives,
-                          (index) => const Icon(
-                            Icons.brightness_1,
-                            color: Colors.yellow,
-                            size: 18,
+                  Flexible(
+                    flex: 1,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: List.generate(
+                              lives,
+                              (index) => const Padding(
+                                padding: EdgeInsets.only(left: 2.0),
+                                child: Icon(
+                                  Icons.favorite,
+                                  color: Colors.red,
+                                  size: 14,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),

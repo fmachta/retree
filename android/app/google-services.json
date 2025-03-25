@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "374054812120",
+    "project_id": "retree-firebase-fm",
+    "storage_bucket": "retree-firebase-fm.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:374054812120:android:80f12aa1a9f2e83ca91aad",
+        "android_client_info": {
+          "package_name": "com.example.retree"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "374054812120-vs95tp0iukq7os7c04mhmd4c1rpjcgqk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.retree",
+            "certificate_hash": "0f9ddc46caf700740a6fad31e3987a4727714577"
+          }
+        },
+        {
+          "client_id": "374054812120-d81sc4ls84vj2e5iaat12uhdmi55boiq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEpOYYiass_GoP1LtIsnSo9lnhoHa6j3c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "374054812120-d81sc4ls84vj2e5iaat12uhdmi55boiq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "374054812120-3j7grakcqthfhdsedl85atu3tgrnnurf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.retree"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
