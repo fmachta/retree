@@ -4,9 +4,9 @@ import '../games/snake_game.dart';
 import '../games/pong_game.dart';
 import '../games/tetris_game.dart';
 import '../games/pacman_game.dart';
+import '../games/breakout_game.dart'; // Import the actual game
+import '../games/space_invaders_game.dart'; // Import the actual game
 // Will create these files later
-// import '../games/space_invaders_game.dart';
-// import '../games/breakout_game.dart';
 
 class GameSelectionScreen extends StatefulWidget {
   const GameSelectionScreen({super.key});
@@ -52,16 +52,16 @@ class _GameSelectionScreenState extends State<GameSelectionScreen> {
     {
       'name': 'Space Invaders',
       'description': 'Shoot down waves of descending alien invaders',
-      'image': 'assets/space_invaders_icon.png',
-      'screen': ComingSoonScreen(gameName: 'Space Invaders', color: Colors.purpleAccent),
+      'image': 'assets/space_invaders_icon.png', // You might need to add this asset
+      'screen': const SpaceInvadersGame(), // Use the actual game screen
       'color': Colors.purpleAccent,
       'icon': Icons.bug_report,
     },
     {
       'name': 'Breakout',
       'description': 'Break all bricks with a bouncing ball',
-      'image': 'assets/breakout_icon.png',
-      'screen': ComingSoonScreen(gameName: 'Breakout', color: Colors.orangeAccent),
+      'image': 'assets/breakout_icon.png', // You might need to add this asset
+      'screen': const BreakoutGame(), // Use the actual game screen
       'color': Colors.orangeAccent,
       'icon': Icons.extension,
     },

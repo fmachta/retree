@@ -48,6 +48,42 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:374054812120:android:ff3a0440e8de6f26a91aad",
+        "android_client_info": {
+          "package_name": "com.machta.retree"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "374054812120-d81sc4ls84vj2e5iaat12uhdmi55boiq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEpOYYiass_GoP1LtIsnSo9lnhoHa6j3c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "374054812120-d81sc4ls84vj2e5iaat12uhdmi55boiq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "374054812120-3j7grakcqthfhdsedl85atu3tgrnnurf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.retree"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

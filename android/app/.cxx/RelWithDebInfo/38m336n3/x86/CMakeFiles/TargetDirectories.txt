@@ -1,0 +1,2 @@
+/Users/ferasmachta/Documents/GitHub/retree/android/app/.cxx/RelWithDebInfo/38m336n3/x86/CMakeFiles/edit_cache.dir
+/Users/ferasmachta/Documents/GitHub/retree/android/app/.cxx/RelWithDebInfo/38m336n3/x86/CMakeFiles/rebuild_cache.dir

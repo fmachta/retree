@@ -1,0 +1,411 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.machta.retree"
+4    android:versionCode="2"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="23"
+9        android:targetSdkVersion="35" />
+10    <!--
+11         Required to query activities that can process text, see:
+12         https://developer.android.com/training/package-visibility and
+13         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
+14
+15         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin.
+16    -->
+17    <queries>
+17-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:40:5-45:15
+18        <intent>
+18-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:41:9-44:18
+19            <action android:name="android.intent.action.PROCESS_TEXT" />
+19-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:42:13-72
+19-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:42:21-70
+20
+21            <data android:mimeType="text/plain" />
+21-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:43:13-50
+21-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:43:19-48
+22        </intent>
+23    </queries>
+24
+25    <uses-permission android:name="android.permission.INTERNET" />
+25-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:25:5-67
+25-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:25:22-64
+26    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+26-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:26:5-79
+26-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:26:22-76
+27    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+27-->[com.google.android.recaptcha:recaptcha:18.6.1] /Users/ferasmachta/.gradle/caches/transforms-3/d152ae1ef00e1410101bbeb04cccbac6/transformed/jetified-recaptcha-18.6.1/AndroidManifest.xml:9:5-98
+27-->[com.google.android.recaptcha:recaptcha:18.6.1] /Users/ferasmachta/.gradle/caches/transforms-3/d152ae1ef00e1410101bbeb04cccbac6/transformed/jetified-recaptcha-18.6.1/AndroidManifest.xml:9:22-95
+28
+29    <permission
+29-->[androidx.core:core:1.13.1] /Users/ferasmachta/.gradle/caches/transforms-3/5bb12097671e673df73790b148f32c17/transformed/core-1.13.1/AndroidManifest.xml:22:5-24:47
+30        android:name="com.machta.retree.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+30-->[androidx.core:core:1.13.1] /Users/ferasmachta/.gradle/caches/transforms-3/5bb12097671e673df73790b148f32c17/transformed/core-1.13.1/AndroidManifest.xml:23:9-81
+31        android:protectionLevel="signature" />
+31-->[androidx.core:core:1.13.1] /Users/ferasmachta/.gradle/caches/transforms-3/5bb12097671e673df73790b148f32c17/transformed/core-1.13.1/AndroidManifest.xml:24:9-44
+32
+33    <uses-permission android:name="com.machta.retree.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+33-->[androidx.core:core:1.13.1] /Users/ferasmachta/.gradle/caches/transforms-3/5bb12097671e673df73790b148f32c17/transformed/core-1.13.1/AndroidManifest.xml:26:5-97
+33-->[androidx.core:core:1.13.1] /Users/ferasmachta/.gradle/caches/transforms-3/5bb12097671e673df73790b148f32c17/transformed/core-1.13.1/AndroidManifest.xml:26:22-94
+34
+35    <application
+36        android:name="android.app.Application"
+36-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:4:9-42
+37        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+37-->[androidx.core:core:1.13.1] /Users/ferasmachta/.gradle/caches/transforms-3/5bb12097671e673df73790b148f32c17/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
+38        android:enableOnBackInvokedCallback="true"
+38-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:5:10-52
+39        android:extractNativeLibs="false"
+40        android:icon="@mipmap/ic_launcher"
+40-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:6:10-44
+41        android:label="retree" >
+41-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:3:9-31
+42        <activity
+42-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:7:9-28:20
+43            android:name="com.machta.retree.MainActivity"
+43-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:8:13-41
+44            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+44-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:13:13-163
+45            android:exported="true"
+45-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:9:13-36
+46            android:hardwareAccelerated="true"
+46-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:14:13-47
+47            android:launchMode="singleTop"
+47-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:10:13-43
+48            android:taskAffinity=""
+48-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:11:13-36
+49            android:theme="@style/LaunchTheme"
+49-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:12:13-47
+50            android:windowSoftInputMode="adjustResize" >
+50-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:15:13-55
+51
+52            <!--
+53                 Specifies an Android theme to apply to this Activity as soon as
+54                 the Android process has started. This theme is visible to the user
+55                 while the Flutter UI initializes. After that, this theme continues
+56                 to determine the Window background behind the Flutter UI.
+57            -->
+58            <meta-data
+58-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:20:13-23:17
+59                android:name="io.flutter.embedding.android.NormalTheme"
+59-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:21:15-70
+60                android:resource="@style/NormalTheme" />
+60-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:22:15-52
+61
+62            <intent-filter>
+62-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:24:13-27:29
+63                <action android:name="android.intent.action.MAIN" />
+63-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:25:17-68
+63-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:25:25-66
+64
+65                <category android:name="android.intent.category.LAUNCHER" />
+65-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:26:17-76
+65-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:26:27-74
+66            </intent-filter>
+67        </activity>
+68        <!--
+69             Don't delete the meta-data below.
+70             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java
+71        -->
+72        <meta-data
+72-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:31:9-33:33
+73            android:name="flutterEmbedding"
+73-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:32:13-44
+74            android:value="2" />
+74-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:33:13-30
+75
+76        <service
+76-->[:firebase_auth] /Users/ferasmachta/Documents/GitHub/retree/build/firebase_auth/intermediates/merged_manifest/release/AndroidManifest.xml:8:9-12:19
+77            android:name="com.google.firebase.components.ComponentDiscoveryService"
+77-->[:firebase_auth] /Users/ferasmachta/Documents/GitHub/retree/build/firebase_auth/intermediates/merged_manifest/release/AndroidManifest.xml:8:18-89
+78            android:directBootAware="true"
+78-->[com.google.firebase:firebase-common:21.0.0] /Users/ferasmachta/.gradle/caches/transforms-3/afa6395ddbc8df7f93505acb3154a008/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:32:13-43
+79            android:exported="false" >
+79-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:68:13-37
+80            <meta-data
+80-->[:firebase_auth] /Users/ferasmachta/Documents/GitHub/retree/build/firebase_auth/intermediates/merged_manifest/release/AndroidManifest.xml:9:13-11:85
+81                android:name="com.google.firebase.components:io.flutter.plugins.firebase.auth.FlutterFirebaseAuthRegistrar"
+81-->[:firebase_auth] /Users/ferasmachta/Documents/GitHub/retree/build/firebase_auth/intermediates/merged_manifest/release/AndroidManifest.xml:10:17-124
+82                android:value="com.google.firebase.components.ComponentRegistrar" />
+82-->[:firebase_auth] /Users/ferasmachta/Documents/GitHub/retree/build/firebase_auth/intermediates/merged_manifest/release/AndroidManifest.xml:11:17-82
+83            <meta-data
+83-->[:cloud_firestore] /Users/ferasmachta/Documents/GitHub/retree/build/cloud_firestore/intermediates/merged_manifest/release/AndroidManifest.xml:9:13-11:85
+84                android:name="com.google.firebase.components:io.flutter.plugins.firebase.firestore.FlutterFirebaseFirestoreRegistrar"
+84-->[:cloud_firestore] /Users/ferasmachta/Documents/GitHub/retree/build/cloud_firestore/intermediates/merged_manifest/release/AndroidManifest.xml:10:17-134
+85                android:value="com.google.firebase.components.ComponentRegistrar" />
+85-->[:cloud_firestore] /Users/ferasmachta/Documents/GitHub/retree/build/cloud_firestore/intermediates/merged_manifest/release/AndroidManifest.xml:11:17-82
+86            <meta-data
+86-->[:firebase_core] /Users/ferasmachta/Documents/GitHub/retree/build/firebase_core/intermediates/merged_manifest/release/AndroidManifest.xml:9:13-11:85
+87                android:name="com.google.firebase.components:io.flutter.plugins.firebase.core.FlutterFirebaseCoreRegistrar"
+87-->[:firebase_core] /Users/ferasmachta/Documents/GitHub/retree/build/firebase_core/intermediates/merged_manifest/release/AndroidManifest.xml:10:17-124
+88                android:value="com.google.firebase.components.ComponentRegistrar" />
+88-->[:firebase_core] /Users/ferasmachta/Documents/GitHub/retree/build/firebase_core/intermediates/merged_manifest/release/AndroidManifest.xml:11:17-82
+89            <meta-data
+89-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:69:13-71:85
+90                android:name="com.google.firebase.components:com.google.firebase.auth.FirebaseAuthRegistrar"
+90-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:70:17-109
+91                android:value="com.google.firebase.components.ComponentRegistrar" />
+91-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:71:17-82
+92            <meta-data
+92-->[com.google.firebase:firebase-firestore:25.1.3] /Users/ferasmachta/.gradle/caches/transforms-3/3058dac4d4e1095ff45baaf5e6c78433/transformed/jetified-firebase-firestore-25.1.3/AndroidManifest.xml:17:13-19:85
+93                android:name="com.google.firebase.components:com.google.firebase.firestore.FirebaseFirestoreKtxRegistrar"
+93-->[com.google.firebase:firebase-firestore:25.1.3] /Users/ferasmachta/.gradle/caches/transforms-3/3058dac4d4e1095ff45baaf5e6c78433/transformed/jetified-firebase-firestore-25.1.3/AndroidManifest.xml:18:17-122
+94                android:value="com.google.firebase.components.ComponentRegistrar" />
+94-->[com.google.firebase:firebase-firestore:25.1.3] /Users/ferasmachta/.gradle/caches/transforms-3/3058dac4d4e1095ff45baaf5e6c78433/transformed/jetified-firebase-firestore-25.1.3/AndroidManifest.xml:19:17-82
+95            <meta-data
+95-->[com.google.firebase:firebase-firestore:25.1.3] /Users/ferasmachta/.gradle/caches/transforms-3/3058dac4d4e1095ff45baaf5e6c78433/transformed/jetified-firebase-firestore-25.1.3/AndroidManifest.xml:20:13-22:85
+96                android:name="com.google.firebase.components:com.google.firebase.firestore.FirestoreRegistrar"
+96-->[com.google.firebase:firebase-firestore:25.1.3] /Users/ferasmachta/.gradle/caches/transforms-3/3058dac4d4e1095ff45baaf5e6c78433/transformed/jetified-firebase-firestore-25.1.3/AndroidManifest.xml:21:17-111
+97                android:value="com.google.firebase.components.ComponentRegistrar" />
+97-->[com.google.firebase:firebase-firestore:25.1.3] /Users/ferasmachta/.gradle/caches/transforms-3/3058dac4d4e1095ff45baaf5e6c78433/transformed/jetified-firebase-firestore-25.1.3/AndroidManifest.xml:22:17-82
+98            <meta-data
+98-->[com.google.firebase:firebase-common-ktx:21.0.0] /Users/ferasmachta/.gradle/caches/transforms-3/134abd9e48efbb2e5ec1a940bfdcc870/transformed/jetified-firebase-common-ktx-21.0.0/AndroidManifest.xml:12:13-14:85
+99                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar"
+99-->[com.google.firebase:firebase-common-ktx:21.0.0] /Users/ferasmachta/.gradle/caches/transforms-3/134abd9e48efbb2e5ec1a940bfdcc870/transformed/jetified-firebase-common-ktx-21.0.0/AndroidManifest.xml:13:17-116
+100                android:value="com.google.firebase.components.ComponentRegistrar" />
+100-->[com.google.firebase:firebase-common-ktx:21.0.0] /Users/ferasmachta/.gradle/caches/transforms-3/134abd9e48efbb2e5ec1a940bfdcc870/transformed/jetified-firebase-common-ktx-21.0.0/AndroidManifest.xml:14:17-82
+101            <meta-data
+101-->[com.google.firebase:firebase-common:21.0.0] /Users/ferasmachta/.gradle/caches/transforms-3/afa6395ddbc8df7f93505acb3154a008/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:35:13-37:85
+102                android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar"
+102-->[com.google.firebase:firebase-common:21.0.0] /Users/ferasmachta/.gradle/caches/transforms-3/afa6395ddbc8df7f93505acb3154a008/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:36:17-109
+103                android:value="com.google.firebase.components.ComponentRegistrar" />
+103-->[com.google.firebase:firebase-common:21.0.0] /Users/ferasmachta/.gradle/caches/transforms-3/afa6395ddbc8df7f93505acb3154a008/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:37:17-82
+104        </service>
+105
+106        <activity
+106-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:29:9-46:20
+107            android:name="com.google.firebase.auth.internal.GenericIdpActivity"
+107-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:30:13-80
+108            android:excludeFromRecents="true"
+108-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:31:13-46
+109            android:exported="true"
+109-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:32:13-36
+110            android:launchMode="singleTask"
+110-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:33:13-44
+111            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+111-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:34:13-72
+112            <intent-filter>
+112-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:35:13-45:29
+113                <action android:name="android.intent.action.VIEW" />
+113-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:36:17-69
+113-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:36:25-66
+114
+115                <category android:name="android.intent.category.DEFAULT" />
+115-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:38:17-76
+115-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:38:27-73
+116                <category android:name="android.intent.category.BROWSABLE" />
+116-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:39:17-78
+116-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:39:27-75
+117
+118                <data
+118-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:43:13-50
+119                    android:host="firebase.auth"
+120                    android:path="/"
+121                    android:scheme="genericidp" />
+122            </intent-filter>
+123        </activity>
+124        <activity
+124-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:47:9-64:20
+125            android:name="com.google.firebase.auth.internal.RecaptchaActivity"
+125-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:48:13-79
+126            android:excludeFromRecents="true"
+126-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:49:13-46
+127            android:exported="true"
+127-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:50:13-36
+128            android:launchMode="singleTask"
+128-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:51:13-44
+129            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+129-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:52:13-72
+130            <intent-filter>
+130-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:53:13-63:29
+131                <action android:name="android.intent.action.VIEW" />
+131-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:36:17-69
+131-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:36:25-66
+132
+133                <category android:name="android.intent.category.DEFAULT" />
+133-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:38:17-76
+133-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:38:27-73
+134                <category android:name="android.intent.category.BROWSABLE" />
+134-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:39:17-78
+134-->[com.google.firebase:firebase-auth:23.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/59198b34ed35c345fb272ba8cacbe427/transformed/jetified-firebase-auth-23.2.0/AndroidManifest.xml:39:27-75
+135
+136                <data
+136-->/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/AndroidManifest.xml:43:13-50
+137                    android:host="firebase.auth"
+138                    android:path="/"
+139                    android:scheme="recaptcha" />
+140            </intent-filter>
+141        </activity>
+142
+143        <service
+143-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] /Users/ferasmachta/.gradle/caches/transforms-3/aca175c0d182a1e31893d3f754536571/transformed/jetified-credentials-play-services-auth-1.2.0-rc01/AndroidManifest.xml:24:9-32:19
+144            android:name="androidx.credentials.playservices.CredentialProviderMetadataHolder"
+144-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] /Users/ferasmachta/.gradle/caches/transforms-3/aca175c0d182a1e31893d3f754536571/transformed/jetified-credentials-play-services-auth-1.2.0-rc01/AndroidManifest.xml:25:13-94
+145            android:enabled="true"
+145-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] /Users/ferasmachta/.gradle/caches/transforms-3/aca175c0d182a1e31893d3f754536571/transformed/jetified-credentials-play-services-auth-1.2.0-rc01/AndroidManifest.xml:26:13-35
+146            android:exported="false" >
+146-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] /Users/ferasmachta/.gradle/caches/transforms-3/aca175c0d182a1e31893d3f754536571/transformed/jetified-credentials-play-services-auth-1.2.0-rc01/AndroidManifest.xml:27:13-37
+147            <meta-data
+147-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] /Users/ferasmachta/.gradle/caches/transforms-3/aca175c0d182a1e31893d3f754536571/transformed/jetified-credentials-play-services-auth-1.2.0-rc01/AndroidManifest.xml:29:13-31:104
+148                android:name="androidx.credentials.CREDENTIAL_PROVIDER_KEY"
+148-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] /Users/ferasmachta/.gradle/caches/transforms-3/aca175c0d182a1e31893d3f754536571/transformed/jetified-credentials-play-services-auth-1.2.0-rc01/AndroidManifest.xml:30:17-76
+149                android:value="androidx.credentials.playservices.CredentialProviderPlayServicesImpl" />
+149-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] /Users/ferasmachta/.gradle/caches/transforms-3/aca175c0d182a1e31893d3f754536571/transformed/jetified-credentials-play-services-auth-1.2.0-rc01/AndroidManifest.xml:31:17-101
+150        </service>
+151
+152        <activity
+152-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] /Users/ferasmachta/.gradle/caches/transforms-3/aca175c0d182a1e31893d3f754536571/transformed/jetified-credentials-play-services-auth-1.2.0-rc01/AndroidManifest.xml:34:9-41:20
+153            android:name="androidx.credentials.playservices.HiddenActivity"
+153-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] /Users/ferasmachta/.gradle/caches/transforms-3/aca175c0d182a1e31893d3f754536571/transformed/jetified-credentials-play-services-auth-1.2.0-rc01/AndroidManifest.xml:35:13-76
+154            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+154-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] /Users/ferasmachta/.gradle/caches/transforms-3/aca175c0d182a1e31893d3f754536571/transformed/jetified-credentials-play-services-auth-1.2.0-rc01/AndroidManifest.xml:36:13-87
+155            android:enabled="true"
+155-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] /Users/ferasmachta/.gradle/caches/transforms-3/aca175c0d182a1e31893d3f754536571/transformed/jetified-credentials-play-services-auth-1.2.0-rc01/AndroidManifest.xml:37:13-35
+156            android:exported="false"
+156-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] /Users/ferasmachta/.gradle/caches/transforms-3/aca175c0d182a1e31893d3f754536571/transformed/jetified-credentials-play-services-auth-1.2.0-rc01/AndroidManifest.xml:38:13-37
+157            android:fitsSystemWindows="true"
+157-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] /Users/ferasmachta/.gradle/caches/transforms-3/aca175c0d182a1e31893d3f754536571/transformed/jetified-credentials-play-services-auth-1.2.0-rc01/AndroidManifest.xml:39:13-45
+158            android:theme="@style/Theme.Hidden" >
+158-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] /Users/ferasmachta/.gradle/caches/transforms-3/aca175c0d182a1e31893d3f754536571/transformed/jetified-credentials-play-services-auth-1.2.0-rc01/AndroidManifest.xml:40:13-48
+159        </activity>
+160
+161        <provider
+161-->[com.google.firebase:firebase-common:21.0.0] /Users/ferasmachta/.gradle/caches/transforms-3/afa6395ddbc8df7f93505acb3154a008/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:23:9-28:39
+162            android:name="com.google.firebase.provider.FirebaseInitProvider"
+162-->[com.google.firebase:firebase-common:21.0.0] /Users/ferasmachta/.gradle/caches/transforms-3/afa6395ddbc8df7f93505acb3154a008/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:24:13-77
+163            android:authorities="com.machta.retree.firebaseinitprovider"
+163-->[com.google.firebase:firebase-common:21.0.0] /Users/ferasmachta/.gradle/caches/transforms-3/afa6395ddbc8df7f93505acb3154a008/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:25:13-72
+164            android:directBootAware="true"
+164-->[com.google.firebase:firebase-common:21.0.0] /Users/ferasmachta/.gradle/caches/transforms-3/afa6395ddbc8df7f93505acb3154a008/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:26:13-43
+165            android:exported="false"
+165-->[com.google.firebase:firebase-common:21.0.0] /Users/ferasmachta/.gradle/caches/transforms-3/afa6395ddbc8df7f93505acb3154a008/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:27:13-37
+166            android:initOrder="100" />
+166-->[com.google.firebase:firebase-common:21.0.0] /Users/ferasmachta/.gradle/caches/transforms-3/afa6395ddbc8df7f93505acb3154a008/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:28:13-36
+167
+168        <activity
+168-->[com.google.android.gms:play-services-auth:20.7.0] /Users/ferasmachta/.gradle/caches/transforms-3/198c4964fde66fb6c16efd2680484e60/transformed/jetified-play-services-auth-20.7.0/AndroidManifest.xml:23:9-27:75
+169            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+169-->[com.google.android.gms:play-services-auth:20.7.0] /Users/ferasmachta/.gradle/caches/transforms-3/198c4964fde66fb6c16efd2680484e60/transformed/jetified-play-services-auth-20.7.0/AndroidManifest.xml:24:13-93
+170            android:excludeFromRecents="true"
+170-->[com.google.android.gms:play-services-auth:20.7.0] /Users/ferasmachta/.gradle/caches/transforms-3/198c4964fde66fb6c16efd2680484e60/transformed/jetified-play-services-auth-20.7.0/AndroidManifest.xml:25:13-46
+171            android:exported="false"
+171-->[com.google.android.gms:play-services-auth:20.7.0] /Users/ferasmachta/.gradle/caches/transforms-3/198c4964fde66fb6c16efd2680484e60/transformed/jetified-play-services-auth-20.7.0/AndroidManifest.xml:26:13-37
+172            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+172-->[com.google.android.gms:play-services-auth:20.7.0] /Users/ferasmachta/.gradle/caches/transforms-3/198c4964fde66fb6c16efd2680484e60/transformed/jetified-play-services-auth-20.7.0/AndroidManifest.xml:27:13-72
+173        <!--
+174            Service handling Google Sign-In user revocation. For apps that do not integrate with
+175            Google Sign-In, this service will never be started.
+176        -->
+177        <service
+177-->[com.google.android.gms:play-services-auth:20.7.0] /Users/ferasmachta/.gradle/caches/transforms-3/198c4964fde66fb6c16efd2680484e60/transformed/jetified-play-services-auth-20.7.0/AndroidManifest.xml:33:9-37:51
+178            android:name="com.google.android.gms.auth.api.signin.RevocationBoundService"
+178-->[com.google.android.gms:play-services-auth:20.7.0] /Users/ferasmachta/.gradle/caches/transforms-3/198c4964fde66fb6c16efd2680484e60/transformed/jetified-play-services-auth-20.7.0/AndroidManifest.xml:34:13-89
+179            android:exported="true"
+179-->[com.google.android.gms:play-services-auth:20.7.0] /Users/ferasmachta/.gradle/caches/transforms-3/198c4964fde66fb6c16efd2680484e60/transformed/jetified-play-services-auth-20.7.0/AndroidManifest.xml:35:13-36
+180            android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION"
+180-->[com.google.android.gms:play-services-auth:20.7.0] /Users/ferasmachta/.gradle/caches/transforms-3/198c4964fde66fb6c16efd2680484e60/transformed/jetified-play-services-auth-20.7.0/AndroidManifest.xml:36:13-107
+181            android:visibleToInstantApps="true" />
+181-->[com.google.android.gms:play-services-auth:20.7.0] /Users/ferasmachta/.gradle/caches/transforms-3/198c4964fde66fb6c16efd2680484e60/transformed/jetified-play-services-auth-20.7.0/AndroidManifest.xml:37:13-48
+182
+183        <activity
+183-->[com.google.android.gms:play-services-base:18.1.0] /Users/ferasmachta/.gradle/caches/transforms-3/11c77c787645e854f59160b81e41102c/transformed/jetified-play-services-base-18.1.0/AndroidManifest.xml:20:9-22:45
+184            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+184-->[com.google.android.gms:play-services-base:18.1.0] /Users/ferasmachta/.gradle/caches/transforms-3/11c77c787645e854f59160b81e41102c/transformed/jetified-play-services-base-18.1.0/AndroidManifest.xml:20:19-85
+185            android:exported="false"
+185-->[com.google.android.gms:play-services-base:18.1.0] /Users/ferasmachta/.gradle/caches/transforms-3/11c77c787645e854f59160b81e41102c/transformed/jetified-play-services-base-18.1.0/AndroidManifest.xml:22:19-43
+186            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+186-->[com.google.android.gms:play-services-base:18.1.0] /Users/ferasmachta/.gradle/caches/transforms-3/11c77c787645e854f59160b81e41102c/transformed/jetified-play-services-base-18.1.0/AndroidManifest.xml:21:19-78
+187
+188        <uses-library
+188-->[androidx.window:window:1.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/613da8d66e01d12d1ca11b9d11e5c7e0/transformed/jetified-window-1.2.0/AndroidManifest.xml:23:9-25:40
+189            android:name="androidx.window.extensions"
+189-->[androidx.window:window:1.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/613da8d66e01d12d1ca11b9d11e5c7e0/transformed/jetified-window-1.2.0/AndroidManifest.xml:24:13-54
+190            android:required="false" />
+190-->[androidx.window:window:1.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/613da8d66e01d12d1ca11b9d11e5c7e0/transformed/jetified-window-1.2.0/AndroidManifest.xml:25:13-37
+191        <uses-library
+191-->[androidx.window:window:1.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/613da8d66e01d12d1ca11b9d11e5c7e0/transformed/jetified-window-1.2.0/AndroidManifest.xml:26:9-28:40
+192            android:name="androidx.window.sidecar"
+192-->[androidx.window:window:1.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/613da8d66e01d12d1ca11b9d11e5c7e0/transformed/jetified-window-1.2.0/AndroidManifest.xml:27:13-51
+193            android:required="false" />
+193-->[androidx.window:window:1.2.0] /Users/ferasmachta/.gradle/caches/transforms-3/613da8d66e01d12d1ca11b9d11e5c7e0/transformed/jetified-window-1.2.0/AndroidManifest.xml:28:13-37
+194
+195        <meta-data
+195-->[com.google.android.gms:play-services-basement:18.4.0] /Users/ferasmachta/.gradle/caches/transforms-3/129329a856a8a82ee8b28b06789f2190/transformed/jetified-play-services-basement-18.4.0/AndroidManifest.xml:6:9-122
+196            android:name="com.google.android.gms.version"
+196-->[com.google.android.gms:play-services-basement:18.4.0] /Users/ferasmachta/.gradle/caches/transforms-3/129329a856a8a82ee8b28b06789f2190/transformed/jetified-play-services-basement-18.4.0/AndroidManifest.xml:6:20-65
+197            android:value="@integer/google_play_services_version" />
+197-->[com.google.android.gms:play-services-basement:18.4.0] /Users/ferasmachta/.gradle/caches/transforms-3/129329a856a8a82ee8b28b06789f2190/transformed/jetified-play-services-basement-18.4.0/AndroidManifest.xml:6:66-119
+198
+199        <provider
+199-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ferasmachta/.gradle/caches/transforms-3/25a8627ae81763b735c193c334e6794e/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:24:9-32:20
+200            android:name="androidx.startup.InitializationProvider"
+200-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ferasmachta/.gradle/caches/transforms-3/25a8627ae81763b735c193c334e6794e/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:25:13-67
+201            android:authorities="com.machta.retree.androidx-startup"
+201-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ferasmachta/.gradle/caches/transforms-3/25a8627ae81763b735c193c334e6794e/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:26:13-68
+202            android:exported="false" >
+202-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ferasmachta/.gradle/caches/transforms-3/25a8627ae81763b735c193c334e6794e/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:27:13-37
+203            <meta-data
+203-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ferasmachta/.gradle/caches/transforms-3/25a8627ae81763b735c193c334e6794e/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:29:13-31:52
+204                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+204-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ferasmachta/.gradle/caches/transforms-3/25a8627ae81763b735c193c334e6794e/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:30:17-78
+205                android:value="androidx.startup" />
+205-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ferasmachta/.gradle/caches/transforms-3/25a8627ae81763b735c193c334e6794e/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:31:17-49
+206            <meta-data
+206-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+207                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+207-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+208                android:value="androidx.startup" />
+208-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+209        </provider>
+210
+211        <receiver
+211-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+212            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+212-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+213            android:directBootAware="false"
+213-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+214            android:enabled="true"
+214-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+215            android:exported="true"
+215-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+216            android:permission="android.permission.DUMP" >
+216-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
+217            <intent-filter>
+217-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+218                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+218-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+218-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
+219            </intent-filter>
+220            <intent-filter>
+220-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+221                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+221-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+221-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
+222            </intent-filter>
+223            <intent-filter>
+223-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+224                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+224-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+224-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+225            </intent-filter>
+226            <intent-filter>
+226-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+227                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+227-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+227-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/ferasmachta/.gradle/caches/transforms-3/d7103fa2b202d025f133831b9c76c8c8/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:50:25-92
+228            </intent-filter>
+229        </receiver> <!-- The activities will be merged into the manifest of the hosting app. -->
+230        <activity
+230-->[com.google.android.play:core-common:2.0.3] /Users/ferasmachta/.gradle/caches/transforms-3/5b4df698dc0c1c82d4b8290ba65089ef/transformed/jetified-core-common-2.0.3/AndroidManifest.xml:14:9-18:65
+231            android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity"
+231-->[com.google.android.play:core-common:2.0.3] /Users/ferasmachta/.gradle/caches/transforms-3/5b4df698dc0c1c82d4b8290ba65089ef/transformed/jetified-core-common-2.0.3/AndroidManifest.xml:15:13-93
+232            android:exported="false"
+232-->[com.google.android.play:core-common:2.0.3] /Users/ferasmachta/.gradle/caches/transforms-3/5b4df698dc0c1c82d4b8290ba65089ef/transformed/jetified-core-common-2.0.3/AndroidManifest.xml:16:13-37
+233            android:stateNotNeeded="true"
+233-->[com.google.android.play:core-common:2.0.3] /Users/ferasmachta/.gradle/caches/transforms-3/5b4df698dc0c1c82d4b8290ba65089ef/transformed/jetified-core-common-2.0.3/AndroidManifest.xml:17:13-42
+234            android:theme="@style/Theme.PlayCore.Transparent" />
+234-->[com.google.android.play:core-common:2.0.3] /Users/ferasmachta/.gradle/caches/transforms-3/5b4df698dc0c1c82d4b8290ba65089ef/transformed/jetified-core-common-2.0.3/AndroidManifest.xml:18:13-62
+235    </application>
+236
+237</manifest>

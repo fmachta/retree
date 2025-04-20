@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math';
+import 'package:provider/provider.dart'; // Added for accessing services
+import '../../services/auth_service.dart'; // Added for user ID
+import '../../services/highscore_service.dart'; // Added for saving scores
 
 class PongGame extends StatefulWidget {
   const PongGame({super.key});
@@ -28,7 +31,9 @@ class _PongGameState extends State<PongGame> with TickerProviderStateMixin {
   bool isPaused = false;
   bool isGameOver = false;
   bool isInitialized = false;
-  
+  final HighScoreService _highscoreService = HighScoreService(); // Corrected class name capitalization
+  String? _userId; // Added for storing user ID
+
   // Block properties
   List<Block> blocks = [];
   int blockRows = 5;
@@ -86,18 +91,13 @@ class _PongGameState extends State<PongGame> with TickerProviderStateMixin {
       parent: _paddleGlowController,
       curve: Curves.easeInOut,
     ));
-    
-    // Initialize game after the first frame to get screen size
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      screenWidth = MediaQuery.of(context).size.width;
-      screenHeight = MediaQuery.of(context).size.height - 
-        kToolbarHeight - 
-        MediaQuery.of(context).padding.top - 
-        MediaQuery.of(context).padding.bottom - 
-        120.0; // Allow space for controls
-      _initializeGame();
-      isInitialized = true;
-    });
+
+    // Get user ID using the correct property
+    // Use context.read for one-time read in initState
+    _userId = context.read<AuthService>().currentUser?.uid; 
+
+    // Defer initialization until after first frame layout
+    // No need for WidgetsBinding here if using LayoutBuilder in build
   }
 
   @override
@@ -108,47 +108,44 @@ class _PongGameState extends State<PongGame> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  // Initialize game elements based on screen size
   void _initializeGame() {
-    // Initialize paddle
+    // Ensure screen dimensions are valid before initializing
+    if (screenWidth <= 0 || screenHeight <= 0) return; 
+
     paddleX = screenWidth / 2 - paddleWidth / 2;
-    
-    // Reset ball position
     ballX = screenWidth / 2 - ballSize / 2;
-    ballY = screenHeight / 2 - ballSize;
+    ballY = screenHeight / 2 - ballSize; // Start ball higher up
     
-    // Randomize ball direction at start
     final random = Random();
     ballDX = (random.nextBool() ? 1 : -1) * (3.0 + random.nextDouble() * 2.0);
-    ballDY = 4.0 + (level - 1) * 0.5; // Increase speed with level
-    
-    // Create blocks with level-dependent layout
+    ballDY = min(4.0 + (level - 1) * 0.5, 10.0); // Cap vertical speed
+
     _createBlocks();
   }
   
+  // Create blocks based on level
   void _createBlocks() {
+     if (screenWidth <= 0 || screenHeight <= 0) return; // Need dimensions
+
     blocks.clear();
-    
-    // Calculate block dimensions based on screen size
-    double blockWidth = (screenWidth - 20) / blockCols;
-    double blockHeight = screenHeight * 0.05;
-    double blockSpacingX = 5.0;
-    double blockSpacingY = 5.0;
-    
-    // Add more rows for higher levels (up to 7)
+    double blockWidth = (screenWidth - 20) / blockCols; // Adjusted for padding
+    double blockHeight = screenHeight * 0.04; // Slightly smaller blocks
+    double blockSpacingX = 4.0; // Reduced spacing
+    double blockSpacingY = 4.0;
+    double topOffset = screenHeight * 0.1; // Start blocks lower down
+
     int actualRows = min(blockRows + (level - 1), 7);
     
     for (int row = 0; row < actualRows; row++) {
-      // Block health increases with row
-      int health = 1;
-      if (row < level && level > 2) {
-        health = 2;
-      }
+      int health = 1 + (row ~/ 2); // Health increases every 2 rows
+      if (level > 3) health++; // Increase base health on later levels
       
       Color color = blockColors[row % blockColors.length];
       
       for (int col = 0; col < blockCols; col++) {
-        double x = col * (blockWidth + blockSpacingX) + 10.0;
-        double y = row * (blockHeight + blockSpacingY) + 50.0;
+        double x = col * (blockWidth + blockSpacingX) + 10.0; // Start with padding
+        double y = row * (blockHeight + blockSpacingY) + topOffset;
         
         blocks.add(Block(
           rect: Rect.fromLTWH(x, y, blockWidth, blockHeight),
@@ -159,635 +156,607 @@ class _PongGameState extends State<PongGame> with TickerProviderStateMixin {
     }
   }
   
+  // Start or restart the game
   void _startGame() {
-    if (!isGameStarted) {
-      setState(() {
-        isGameStarted = true;
-        isPaused = false;
-        isGameOver = false;
-        score = 0;
-        level = 1;
-        lives = 3;
-      });
-      
-      _initializeGame();
-      
-      // Start game loop with a timer (~60 FPS)
-      _gameTimer = Timer.periodic(const Duration(milliseconds: 16), (timer) {
-        if (!isPaused && isGameStarted && !isGameOver) {
-          _update();
-        }
-      });
-    }
+    if (!isInitialized) return; 
+
+    setState(() {
+      isGameStarted = true;
+      isPaused = false;
+      isGameOver = false;
+      score = 0;
+      level = 1;
+      lives = 3;
+      highScore = highScore; // Keep existing high score display
+      _initializeGame(); 
+    });
+
+    _gameTimer?.cancel();
+    _gameTimer = Timer.periodic(const Duration(milliseconds: 16), (timer) {
+      if (!isPaused && isGameStarted && !isGameOver) {
+        _update();
+      }
+    });
   }
   
+  // Toggle pause state
   void _togglePause() {
+    if (!isGameStarted || isGameOver) return; 
     setState(() {
       isPaused = !isPaused;
     });
   }
   
+  // Reset ball position and speed after losing a life
   void _resetBall() {
+    if (screenWidth <= 0 || screenHeight <= 0) return;
+
     ballX = screenWidth / 2 - ballSize / 2;
-    ballY = screenHeight / 2 - ballSize / 2;
+    ballY = screenHeight * 0.6; // Reset lower down
     
-    // Randomize ball direction
     final random = Random();
     ballDX = (random.nextBool() ? 1 : -1) * (3.0 + random.nextDouble() * 2.0);
-    ballDY = 4.0 + (level - 1) * 0.5;
+    ballDY = min(4.0 + (level - 1) * 0.5, 10.0); 
   }
-  
+
+  // Advance to the next level
   void _goToNextLevel() {
     setState(() {
       level++;
-      score += 50; // Bonus for clearing the level
+      score += 50 * level; // Increase bonus for higher levels
       _resetBall();
       _createBlocks();
     });
   }
 
+  // Main game loop update function
   void _update() {
+    if (isPaused || isGameOver || !isGameStarted) return;
+
     setState(() {
-      // Update ball position
+      // --- Ball Movement ---
       ballX += ballDX;
       ballY += ballDY;
 
-      // Wall collisions
-      if (ballX <= 0 || ballX >= screenWidth - ballSize) {
-        ballDX = -ballDX; // Bounce off left/right walls
-        // Add slight random variance to angle on wall bounce
-        ballDX *= 0.95 + (Random().nextDouble() * 0.1);
+      // --- Wall Collisions ---
+      if (ballX <= 0 && ballDX < 0) { // Hit left wall
+        ballDX = -ballDX * (0.95 + (Random().nextDouble() * 0.1));
+        ballX = 0; // Prevent sticking
+      } else if (ballX >= screenWidth - ballSize && ballDX > 0) { // Hit right wall
+         ballDX = -ballDX * (0.95 + (Random().nextDouble() * 0.1));
+         ballX = screenWidth - ballSize; // Prevent sticking
       }
       
-      if (ballY <= 0) {
-        ballDY = -ballDY; // Bounce off top wall
+      if (ballY <= 0 && ballDY < 0) { // Hit top wall
+        ballDY = -ballDY; 
+        ballY = 0; // Prevent sticking
       }
 
-      // Paddle collision
-      Rect paddleRect = Rect.fromLTWH(paddleX, screenHeight - paddleHeight - 10, paddleWidth, paddleHeight);
-      Rect ballRect = Rect.fromLTWH(ballX, ballY, ballSize, ballSize);
+      // --- Paddle Collision ---
+      // Predict next frame position for better collision detection
+      Rect nextBallRect = Rect.fromLTWH(ballX + ballDX, ballY + ballDY, ballSize, ballSize);
+      Rect paddleRect = Rect.fromLTWH(paddleX, screenHeight - paddleHeight, paddleWidth, paddleHeight); // Paddle at bottom edge
       
-      if (paddleRect.overlaps(ballRect) && ballDY > 0) {
-        // Calculate hit position relative to paddle center (range: -0.5 to 0.5)
+      if (nextBallRect.overlaps(paddleRect) && ballDY > 0) {
         double hitPos = (ballX + ballSize / 2 - (paddleX + paddleWidth / 2)) / paddleWidth;
         
-        // Bounce with angle based on hit position
-        ballDY = -ballDY.abs(); // Always bounce upward
-        ballDX = hitPos * 10.0; // Adjust horizontal speed based on hit point
+        ballDY = -ballDY.abs(); // Bounce up
+        ballDX = hitPos * 10.0; // Angle based on hit position
+        ballDX = ballDX.clamp(-12.0, 12.0); // Cap horizontal speed
+        if (ballDX.abs() < 2.0) ballDX = ballDX.sign * 2.0; // Min horizontal speed
         
-        // Ensure minimum horizontal speed
-        if (ballDX.abs() < 2.0) {
-          ballDX = ballDX.sign * 2.0;
-        }
-        
-        // Increment score
-        score += 5;
+        // Adjust ball position to sit exactly on the paddle to prevent sinking
+        ballY = screenHeight - paddleHeight - ballSize; 
+
+        score += 5; 
       }
 
-      // Block collisions
-      for (int i = 0; i < blocks.length; i++) {
-        if (blocks[i].rect.overlaps(ballRect)) {
-          // Determine collision side
-          final blockCenterX = blocks[i].rect.center.dx;
-          final blockCenterY = blocks[i].rect.center.dy;
-          final ballCenterX = ballX + ballSize / 2;
-          final ballCenterY = ballY + ballSize / 2;
-          
-          final dx = blockCenterX - ballCenterX;
-          final dy = blockCenterY - ballCenterY;
-          
-          // If horizontal distance is greater, it's a left/right collision
-          if (dx.abs() * blocks[i].rect.height > dy.abs() * blocks[i].rect.width) {
-            ballDX = -ballDX; // Horizontal bounce
-          } else {
-            ballDY = -ballDY; // Vertical bounce
-          }
-          
-          // Reduce block health and remove if destroyed
-          blocks[i].health--;
-          if (blocks[i].health <= 0) {
-            blocks.removeAt(i);
-            score += 10;
-          }
-          
-          break; // Only handle one collision per frame
-        }
-      }
+      // --- Block Collisions ---
+      // Iterate backwards for safe removal during iteration
+      for (int i = blocks.length - 1; i >= 0; i--) {
+         Rect blockRect = blocks[i].rect;
+         // Use predicted nextBallRect for collision check
+         // Rect nextBallRect = Rect.fromLTWH(ballX + ballDX, ballY + ballDY, ballSize, ballSize); // Already defined above paddle collision
 
-      // Check for ball out of bounds (bottom)
-      if (ballY >= screenHeight - ballSize) {
+         if (nextBallRect.overlaps(blockRect)) { 
+            // Bounce logic first
+            final intersection = blockRect.intersect(nextBallRect); 
+            if (intersection.width < intersection.height) {
+               ballDX = -ballDX;
+               ballX += ballDX > 0 ? intersection.width : -intersection.width; 
+            } else {
+               ballDY = -ballDY;
+               ballY += ballDY > 0 ? intersection.height : -intersection.height;
+            }
+            // Decrement health only when removing
+            blocks[i].health--; 
+            if (blocks[i].health <= 0) {
+               score += 10 * level; // Award points
+               blocks.removeAt(i); // Remove immediately now that health is confirmed <= 0
+            } else {
+               // If block not destroyed, just update its state (e.g., color change if needed)
+               // Currently no visual change for damaged blocks, but could add here.
+            }
+            
+            // Removed break; Allow checking multiple collisions per frame (e.g., corners)
+         }
+      }
+      // Block removal is now handled inside the loop
+
+      // --- Ball Out of Bounds ---
+      if (ballY >= screenHeight) { 
         lives--;
         
         if (lives <= 0) {
-          // Game over
+          // --- Game Over ---
           _gameTimer?.cancel();
-          isGameOver = true;
-          
-          // Update high score
-          if (score > highScore) {
-            highScore = score;
+          isGameOver = true; 
+
+          if (_userId != null && score > 0) {
+             if (score > highScore) {
+               highScore = score; // Update local display
+             }
+             // Save high score using the correct arguments
+             _highscoreService.saveUserHighScore('Pong', score).catchError((error) {
+               print("Error saving high score: $error");
+               // Optionally show a message to the user if saving fails
+             });
+          } else {
+             if (score > highScore) {
+               highScore = score;
+             }
           }
         } else {
-          // Reset ball for next life
-          _resetBall();
+          // --- Lose Life ---
+          isPaused = true; 
+          Timer(const Duration(milliseconds: 1500), () { // Longer pause
+             if (!mounted) return; 
+             setState(() {
+                 _resetBall();
+                 isPaused = false; 
+             });
+          });
         }
       }
 
-      // Win condition - all blocks cleared
-      if (blocks.isEmpty) {
-        _goToNextLevel();
+      // --- Level Cleared ---
+      if (isGameStarted && !isGameOver && blocks.isEmpty) {
+         isPaused = true;
+         Timer(const Duration(milliseconds: 1500), () { // Longer pause
+            if (!mounted) return; 
+            _goToNextLevel(); 
+            setState(() {
+               isPaused = false; 
+            });
+         });
       }
     });
   }
   
+  // Move paddle based on delta X
   void _handlePaddleMove(double dx) {
+    if (isPaused || isGameOver || !isGameStarted) return; 
     setState(() {
       paddleX += dx;
-      
-      // Keep paddle within screen bounds
-      if (paddleX < 0) {
-        paddleX = 0;
-      } else if (paddleX > screenWidth - paddleWidth) {
-        paddleX = screenWidth - paddleWidth;
-      }
+      paddleX = paddleX.clamp(0.0, screenWidth - paddleWidth); 
     });
   }
   
+  // Start dragging paddle
   void _handlePanStart(DragStartDetails details) {
     if (!isGameStarted || isPaused || isGameOver) return;
-    dragStartX = details.globalPosition.dx;
+    // Use global position for initial tap, convert to local for reference
+    RenderBox renderBox = context.findRenderObject() as RenderBox;
+    dragStartX = renderBox.globalToLocal(details.globalPosition).dx - paddleX;
     isDragging = true;
   }
 
+  // Update paddle position during drag
   void _handlePanUpdate(DragUpdateDetails details) {
     if (!isDragging || !isGameStarted || isPaused || isGameOver) return;
+    RenderBox renderBox = context.findRenderObject() as RenderBox;
+    double currentX = renderBox.globalToLocal(details.globalPosition).dx;
     
-    double dx = details.globalPosition.dx - (dragStartX ?? 0);
-    dragStartX = details.globalPosition.dx;
-    _handlePaddleMove(dx);
+    setState(() {
+       paddleX = (currentX - (dragStartX ?? 0)).clamp(0.0, screenWidth - paddleWidth);
+    });
   }
 
+  // End dragging paddle
   void _handlePanEnd(DragEndDetails details) {
     isDragging = false;
     dragStartX = null;
   }
 
+  // Build the main widget tree
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFF1A1A2E), 
       appBar: AppBar(
         title: const Text(
           'PONG BREAKOUT',
           style: TextStyle(
-            fontFamily: 'joystix_monospace',
-            fontSize: 22,
+            fontFamily: 'joystix_monospace', fontSize: 20, color: Colors.white, letterSpacing: 1.5,
           ),
         ),
-        backgroundColor: Colors.black,
+        backgroundColor: const Color(0xFF1A1A2E), 
         elevation: 0,
+        centerTitle: true, 
         actions: [
           IconButton(
             icon: Icon(isPaused ? Icons.play_arrow : Icons.pause),
-            onPressed: isGameStarted ? _togglePause : null,
+            tooltip: isPaused ? 'Resume' : 'Pause',
+            onPressed: _togglePause, 
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () {
-              if (isGameStarted) {
-                _gameTimer?.cancel();
-              }
-              _startGame();
-            },
+             tooltip: 'Restart Game',
+            onPressed: _startGame, 
           ),
         ],
       ),
-      body: isInitialized ? Column(
-        children: [
-          // Status bar
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildInfoBox('SCORE', '$score'),
-                _buildInfoBox('LEVEL', '$level'),
-                _buildInfoBox('LIVES', '$lives'),
-              ],
-            ),
-          ),
-          
-          // Game area
-          Expanded(
-            child: GestureDetector(
-              onHorizontalDragStart: _handlePanStart,
-              onHorizontalDragUpdate: _handlePanUpdate,
-              onHorizontalDragEnd: _handlePanEnd,
-              child: Container(
+      body: LayoutBuilder( 
+        builder: (context, constraints) {
+          // Initialize dimensions and game state on first build or resize
+          if (!isInitialized || screenWidth != constraints.maxWidth || screenHeight != (constraints.maxHeight - 100)) { // Check height too
+             screenWidth = constraints.maxWidth;
+             final safePadding = MediaQuery.of(context).padding;
+             final appBarHeight = AppBar().preferredSize.height;
+             const double controlAreaHeight = 100.0; 
+             screenHeight = constraints.maxHeight - appBarHeight - safePadding.top - safePadding.bottom - controlAreaHeight;
+             
+             // Ensure height is positive
+             if (screenHeight < 0) screenHeight = 0;
+
+             // Initialize or re-initialize game if not already started
+             if (!isGameStarted && screenWidth > 0 && screenHeight > 0) {
+                 WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                       _initializeGame();
+                       setState(() {
+                          isInitialized = true;
+                       });
+                    }
+                 });
+             } else if (isGameStarted && screenWidth > 0 && screenHeight > 0) {
+                 // Adjust paddle position if screen resized during game
+                 paddleX = paddleX.clamp(0.0, screenWidth - paddleWidth);
+             }
+          }
+
+          if (!isInitialized || screenHeight <= 0) { // Also check height
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          // --- Main Game Layout ---
+          return Column(
+            children: [
+              // Status bar
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), 
                 decoration: BoxDecoration(
-                  color: Colors.black,
-                  border: Border.all(
-                    color: Colors.blueAccent.withOpacity(0.3),
-                    width: 2,
+                  color: const Color(0xFF162447).withOpacity(0.5), 
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(12), bottomRight: Radius.circular(12),
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.blueAccent.withOpacity(0.2),
-                      blurRadius: 8,
-                      spreadRadius: 2,
-                    ),
-                  ],
                 ),
-                child: Stack(
+                child: Row(
+                  // Use Expanded to allow info boxes to share space flexibly
                   children: [
-                    // Background grid
-                    CustomPaint(
-                      size: Size(screenWidth, screenHeight),
-                      painter: GridPainter(),
-                    ),
-                    
-                    // Draw blocks
-                    ...blocks.map((block) => Positioned(
-                      left: block.rect.left,
-                      top: block.rect.top,
-                      width: block.rect.width,
-                      height: block.rect.height,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: block.color.withOpacity(0.7),
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
-                            width: 1,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: block.color.withOpacity(0.5),
-                              blurRadius: 3,
-                              spreadRadius: 1,
-                            ),
-                          ],
-                        ),
-                        child: block.health > 1 
-                          ? Center(
-                              child: Icon(
-                                Icons.bolt,
-                                color: Colors.white.withOpacity(0.7),
-                                size: block.rect.height * 0.5,
-                              ),
-                            )
-                          : null,
-                      ),
-                    )),
-                    
-                    // Ball with animation
-                    if (isGameStarted && !isGameOver)
-                      AnimatedBuilder(
-                        animation: _ballPulseAnimation,
-                        builder: (context, child) {
-                          return Positioned(
-                            left: ballX,
-                            top: ballY,
-                            child: Transform.scale(
-                              scale: _ballPulseAnimation.value,
-                              child: Container(
-                                width: ballSize,
-                                height: ballSize,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.blueAccent.withOpacity(0.8),
-                                      blurRadius: 10,
-                                      spreadRadius: 2,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        }
-                      ),
-                    
-                    // Paddle with glow animation
-                    if (isGameStarted)
-                      AnimatedBuilder(
-                        animation: _paddleGlowAnimation,
-                        builder: (context, child) {
-                          return Positioned(
-                            left: paddleX,
-                            bottom: 10,
-                            child: Container(
-                              width: paddleWidth,
-                              height: paddleHeight,
-                              decoration: BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.blueAccent,
-                                    blurRadius: _paddleGlowAnimation.value,
-                                    spreadRadius: _paddleGlowAnimation.value / 2,
-                                  ),
-                                ],
-                                gradient: const LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [Colors.lightBlueAccent, Colors.blueAccent],
-                                ),
-                              ),
-                            ),
-                          );
-                        }
-                      ),
-                    
-                    // Start game overlay
-                    if (!isGameStarted)
-                      _buildStartGameOverlay(),
-                    
-                    // Game over overlay
-                    if (isGameOver)
-                      _buildGameOverOverlay(),
-                    
-                    // Pause overlay
-                    if (isPaused && !isGameOver)
-                      _buildPauseOverlay(),
+                    Expanded(child: _buildInfoBox('SCORE', '$score', Icons.star_border)),
+                    Expanded(child: _buildInfoBox('LEVEL', '$level', Icons.layers_outlined)),
+                    Expanded(child: _buildInfoBox('LIVES', '$lives', Icons.favorite_border)),
                   ],
                 ),
               ),
-            ),
-          ),
-          
-          // Controls
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildControlButton(
-                  Icons.arrow_back,
-                  () => _handlePaddleMove(-20),
+
+              // Game area
+              Expanded(
+                child: GestureDetector(
+                  onHorizontalDragStart: _handlePanStart,
+                  onHorizontalDragUpdate: _handlePanUpdate,
+                  onHorizontalDragEnd: _handlePanEnd,
+                  child: ClipRect( 
+                    child: Container(
+                      width: screenWidth, 
+                      height: screenHeight, 
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter, end: Alignment.bottomCenter,
+                          colors: [ const Color(0xFF1A1A2E), const Color(0xFF162447).withOpacity(0.8) ],
+                        ),
+                        border: Border.all( color: Colors.cyanAccent.withOpacity(0.2), width: 1),
+                      ),
+                      child: Stack(
+                        clipBehavior: Clip.none, // Allow paddle glow to extend slightly
+                        children: [
+                          // Background grid
+                          CustomPaint( size: Size(screenWidth, screenHeight), painter: GridPainter()),
+                          
+                          // Blocks
+                          ...blocks.map((block) => Positioned(
+                            left: block.rect.left, top: block.rect.top,
+                            width: block.rect.width, height: block.rect.height,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft, end: Alignment.bottomRight,
+                                  colors: [ block.color.withOpacity(0.9), block.color.withOpacity(0.6) ],
+                                ),
+                                borderRadius: BorderRadius.circular(3), 
+                                border: Border.all( color: Colors.white.withOpacity(0.2), width: 0.5),
+                                boxShadow: [ BoxShadow( color: block.color.withOpacity(0.4), blurRadius: 4, offset: const Offset(1, 1)) ],
+                              ),
+                              child: block.health > 1 ? Center( child: Icon( Icons.bolt, color: Colors.white.withOpacity(0.7), size: block.rect.height * 0.5)) : null,
+                            ),
+                          )),
+                          
+                          // Ball
+                          if (isGameStarted && !isGameOver)
+                            Positioned(
+                              left: ballX, top: ballY,
+                              child: AnimatedBuilder( // Use builder only for scale
+                                animation: _ballPulseAnimation,
+                                builder: (context, child) => Transform.scale(scale: _ballPulseAnimation.value, child: child),
+                                child: Container( // Static part of the ball
+                                  width: ballSize, height: ballSize,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: RadialGradient( colors: [ Colors.white, Colors.grey[300]! ]),
+                                    boxShadow: [ BoxShadow( color: Colors.cyanAccent.withOpacity(0.7), blurRadius: 8, spreadRadius: 1)],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          
+                          // Paddle
+                          if (isGameStarted)
+                             Positioned(
+                                left: paddleX, bottom: 0, // Position paddle at the very bottom
+                                child: AnimatedBuilder(
+                                   animation: _paddleGlowAnimation,
+                                   builder: (context, child) {
+                                      return Container(
+                                         width: paddleWidth, height: paddleHeight,
+                                         decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                               begin: Alignment.topCenter, end: Alignment.bottomCenter,
+                                               colors: [ Colors.cyanAccent.withOpacity(0.9), Colors.blueAccent.withOpacity(0.9) ],
+                                            ),
+                                            borderRadius: BorderRadius.circular(paddleHeight / 2), 
+                                            boxShadow: [
+                                               BoxShadow( 
+                                                  color: Colors.cyanAccent.withOpacity(0.6), 
+                                                  blurRadius: _paddleGlowAnimation.value * 1.5, 
+                                                  spreadRadius: _paddleGlowAnimation.value / 3,
+                                               ),
+                                            ],
+                                         ),
+                                      );
+                                   }
+                                ),
+                             ),
+                          
+                          // Overlays
+                          if (!isGameStarted && !isGameOver) _buildStartGameOverlay(),
+                          if (isGameOver) _buildGameOverOverlay(),
+                          if (isPaused && !isGameOver) _buildPauseOverlay(),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-                const SizedBox(width: 50),
-                _buildControlButton(
-                  Icons.arrow_forward,
-                  () => _handlePaddleMove(20),
+              ),
+              
+              // Controls Area
+              Container(
+                height: 100, 
+                color: const Color(0xFF1A1A2E), // Match background
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildControlButton( Icons.arrow_back, () => _handlePaddleMove(-30)),
+                    const SizedBox(width: 60), 
+                    _buildControlButton( Icons.arrow_forward, () => _handlePaddleMove(30)),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        ],
-      ) : const Center(
-        child: CircularProgressIndicator(),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
-  
-  Widget _buildInfoBox(String label, String value) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.black,
-        border: Border.all(color: Colors.blueAccent, width: 1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white60,
-              fontSize: 12,
-              fontFamily: 'joystix_monospace',
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.blueAccent,
-              fontSize: 16,
-              fontFamily: 'joystix_monospace',
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
+
+  // --- Helper Widgets for UI Elements ---
+
+  Widget _buildInfoBox(String label, String value, IconData icon) {
+    return Column( 
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: Colors.cyanAccent.withOpacity(0.8), size: 18),
+        const SizedBox(height: 4),
+        Text( label, style: TextStyle( color: Colors.white.withOpacity(0.7), fontSize: 10, fontFamily: 'joystix_monospace', letterSpacing: 1.0)),
+        const SizedBox(height: 2),
+        Text( value, style: const TextStyle( color: Colors.white, fontSize: 16, fontFamily: 'joystix_monospace', fontWeight: FontWeight.bold)),
+      ],
     );
   }
-  
+
   Widget _buildControlButton(IconData icon, VoidCallback onPressed) {
     return Material(
-      color: Colors.transparent,
+      color: Colors.transparent, 
       child: InkWell(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(30), 
+        splashColor: Colors.cyanAccent.withOpacity(0.3), 
+        highlightColor: Colors.cyanAccent.withOpacity(0.1), 
         child: Container(
-          width: 60,
-          height: 60,
+          width: 60, height: 60,
           decoration: BoxDecoration(
-            color: Colors.black,
-            border: Border.all(
-              color: Colors.blueAccent,
-              width: 2,
-            ),
-            borderRadius: BorderRadius.circular(20),
+            shape: BoxShape.circle, 
+            gradient: LinearGradient( colors: [ Colors.cyanAccent.withOpacity(0.5), Colors.blueAccent.withOpacity(0.7)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+            border: Border.all( color: Colors.cyanAccent.withOpacity(0.4), width: 1),
+            boxShadow: [ BoxShadow( color: Colors.black.withOpacity(0.3), blurRadius: 5, offset: const Offset(0, 2))],
           ),
-          child: Icon(
-            icon,
-            color: Colors.blueAccent,
-            size: 30,
+          child: Icon( icon, color: Colors.white, size: 30),
+        ),
+      ),
+    );
+  } 
+
+  // --- Overlay Widgets ---
+
+  Widget _buildStartGameOverlay() {
+    return Positioned.fill( // Use Positioned.fill to cover the Stack
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter, end: Alignment.bottomCenter,
+            colors: [ const Color(0xFF1A1A2E).withOpacity(0.9), const Color(0xFF162447).withOpacity(0.95)],
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration( shape: BoxShape.circle, color: Colors.cyanAccent.withOpacity(0.1), border: Border.all(color: Colors.cyanAccent.withOpacity(0.5), width: 2)),
+                child: Icon( Icons.rocket_launch_outlined, size: 50, color: Colors.cyanAccent),
+              ),
+              const SizedBox(height: 25),
+              const Text( 'PONG BREAKOUT', style: TextStyle( color: Colors.white, fontSize: 26, fontFamily: 'joystix_monospace', fontWeight: FontWeight.bold, letterSpacing: 3, shadows: [ Shadow( blurRadius: 10.0, color: Colors.cyanAccent, offset: Offset(0, 0))])),
+              const SizedBox(height: 50),
+              ElevatedButton(
+                onPressed: _startGame,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.cyanAccent, foregroundColor: const Color(0xFF1A1A2E), 
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
+                  shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(30)), 
+                  elevation: 5, shadowColor: Colors.cyanAccent.withOpacity(0.5),
+                ),
+                child: const Text( 'START', style: TextStyle( fontSize: 18, fontFamily: 'joystix_monospace', fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+              ),
+              const SizedBox(height: 30),
+              Text( 'Swipe or use arrows\nto control the paddle', style: TextStyle( color: Colors.white.withOpacity(0.6), fontSize: 12, fontFamily: 'joystix_monospace', letterSpacing: 1.0), textAlign: TextAlign.center),
+            ],
           ),
         ),
       ),
     );
   }
-  
-  Widget _buildStartGameOverlay() {
-    return Container(
-      color: Colors.black.withOpacity(0.8),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Logo
-            Icon(
-              Icons.sports_volleyball,
-              size: 60,
-              color: Colors.blueAccent,
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'PONG BREAKOUT',
-              style: TextStyle(
-                color: Colors.blueAccent,
-                fontSize: 24,
-                fontFamily: 'joystix_monospace',
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
-              ),
-            ),
-            const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: _startGame,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+
+  Widget _buildGameOverOverlay() {
+    return Positioned.fill(
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter, end: Alignment.bottomCenter,
+            colors: [ const Color(0xFF1A1A2E).withOpacity(0.9), const Color(0xFF162447).withOpacity(0.95)],
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+               Text( // GAME OVER Text
+                'GAME OVER',
+                style: TextStyle( // Removed const
+                  color: Colors.redAccent, fontSize: 32, fontFamily: 'joystix_monospace', fontWeight: FontWeight.bold,
+                  shadows: [ Shadow( blurRadius: 8.0, color: Colors.redAccent.withOpacity(0.7), offset: const Offset(0, 0))],
                 ),
               ),
-              child: const Text(
-                'START',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontFamily: 'joystix_monospace',
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Swipe or use arrows\nto move the paddle',
+            const SizedBox(height: 30),
+            Text(
+              'Swipe or use arrows\nto control the paddle', 
               style: TextStyle(
-                color: Colors.white70,
-                fontSize: 14,
+                color: Colors.white.withOpacity(0.6), 
+                fontSize: 11, // Reduced font size slightly
                 fontFamily: 'joystix_monospace',
+                letterSpacing: 0.8, // Reduced letter spacing slightly
               ),
               textAlign: TextAlign.center,
             ),
-          ],
+              const SizedBox(height: 40),
+              ElevatedButton( // Play Again Button
+                onPressed: _startGame,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.cyanAccent, foregroundColor: const Color(0xFF1A1A2E),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                  shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(30)), 
+                  elevation: 5, shadowColor: Colors.cyanAccent.withOpacity(0.5),
+                ),
+                child: const Text( 'PLAY AGAIN', style: TextStyle( fontSize: 16, fontFamily: 'joystix_monospace', fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-  
-  Widget _buildGameOverOverlay() {
-    return Container(
-      color: Colors.black.withOpacity(0.8),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'GAME OVER',
-              style: TextStyle(
-                color: Colors.redAccent,
-                fontSize: 28,
-                fontFamily: 'joystix_monospace',
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'SCORE: $score',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontFamily: 'joystix_monospace',
-              ),
-            ),
-            const SizedBox(height: 10),
-            if (score >= highScore && score > 0)
-              const Text(
-                'NEW HIGH SCORE!',
-                style: TextStyle(
-                  color: Colors.yellowAccent,
-                  fontSize: 16,
-                  fontFamily: 'joystix_monospace',
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: _startGame,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text(
-                'PLAY AGAIN',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontFamily: 'joystix_monospace',
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-  
+
   Widget _buildPauseOverlay() {
-    return Container(
-      color: Colors.black.withOpacity(0.8),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'PAUSED',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 28,
-                fontFamily: 'joystix_monospace',
-                fontWeight: FontWeight.bold,
+     return Positioned.fill(
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter, end: Alignment.bottomCenter,
+            colors: [ const Color(0xFF1A1A2E).withOpacity(0.9), const Color(0xFF162447).withOpacity(0.95)],
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+               Text( // PAUSED Text
+                'PAUSED',
+                style: TextStyle( // Removed const
+                  color: Colors.white, fontSize: 32, fontFamily: 'joystix_monospace', fontWeight: FontWeight.bold, letterSpacing: 2.0,
+                  shadows: [ Shadow( blurRadius: 8.0, color: Colors.white.withOpacity(0.5), offset: const Offset(0, 0))],
+                ),
               ),
-            ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: _togglePause,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+              const SizedBox(height: 40),
+              Row( // Pause Buttons Row
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Reduce padding and font size slightly to prevent overflow on smaller screens
+                  ElevatedButton.icon( // Resume Button
+                    icon: const Icon(Icons.play_arrow, size: 18), label: const Text('RESUME'),
+                    onPressed: _togglePause,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.greenAccent, foregroundColor: const Color(0xFF1A1A2E),
+                      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12), // Reduced padding
+                      shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(30)),
+                      textStyle: const TextStyle( fontSize: 12, fontFamily: 'joystix_monospace', fontWeight: FontWeight.bold, letterSpacing: 1.0), // Reduced font size
+                      elevation: 5, shadowColor: Colors.greenAccent.withOpacity(0.5),
                     ),
                   ),
-                  child: const Text(
-                    'RESUME',
-                    style: TextStyle(
-                      fontFamily: 'joystix_monospace',
-                      fontWeight: FontWeight.bold,
+                  const SizedBox(width: 20), // Reduced spacing
+                  ElevatedButton.icon( // Restart Button
+                    icon: const Icon(Icons.refresh, size: 18), label: const Text('RESTART'),
+                    onPressed: _startGame,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orangeAccent, foregroundColor: const Color(0xFF1A1A2E),
+                       padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12), // Reduced padding
+                      shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(30)),
+                       textStyle: const TextStyle( fontSize: 12, fontFamily: 'joystix_monospace', fontWeight: FontWeight.bold, letterSpacing: 1.0), // Reduced font size
+                      elevation: 5, shadowColor: Colors.orangeAccent.withOpacity(0.5),
                     ),
                   ),
-                ),
-                const SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: _startGame,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text(
-                    'RESTART',
-                    style: TextStyle(
-                      fontFamily: 'joystix_monospace',
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
+// --- Helper Classes ---
 
 class Block {
   final Rect rect;
@@ -805,22 +774,22 @@ class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.blue.withOpacity(0.1)
+      ..color = Colors.cyanAccent.withOpacity(0.05) 
       ..strokeWidth = 0.5;
-    
+
+    const double spacing = 20.0; 
+
     // Draw horizontal lines
-    for (int i = 0; i <= 10; i++) {
-      final y = size.height * (i / 10);
+    for (double y = 0; y <= size.height; y += spacing) {
       canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
-    
+
     // Draw vertical lines
-    for (int i = 0; i <= 10; i++) {
-      final x = size.width * (i / 10);
+    for (double x = 0; x <= size.width; x += spacing) {
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
     }
   }
-  
+
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

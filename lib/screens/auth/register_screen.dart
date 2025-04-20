@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuthException
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 
@@ -22,6 +23,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _confirmPassword = '';
   String _error = '';
   bool _isLoading = false;
+  bool _isPasswordVisible = false; // State for password visibility
+  bool _isConfirmPasswordVisible = false; // State for confirm password visibility
 
   void _registerWithEmailAndPassword() async {
     if (_formKey.currentState!.validate()) {
@@ -43,18 +46,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
       } catch (e) {
         String errorMessage = 'Registration failed';
         
-        // Parse Firebase error messages
-        if (e.toString().contains('email-already-in-use')) {
-          errorMessage = 'Email already in use';
-        } else if (e.toString().contains('invalid-email')) {
-          errorMessage = 'Invalid email format';
-        } else if (e.toString().contains('weak-password')) {
-          errorMessage = 'Password is too weak';
-        } else if (e.toString().contains('operation-not-allowed')) {
-          errorMessage = 'Email/password accounts are not enabled';
+        // Use FirebaseAuthException codes for reliable error handling
+        if (e is FirebaseAuthException) {
+          switch (e.code) {
+            case 'email-already-in-use':
+              errorMessage = 'This email is already registered. Try logging in.';
+              break;
+            case 'invalid-email':
+              errorMessage = 'The email address is badly formatted.';
+              break;
+            case 'weak-password':
+              errorMessage = 'Password is too weak. Please use a stronger password.';
+              break;
+            case 'operation-not-allowed':
+              errorMessage = 'Email/password sign-up is not enabled.';
+              break;
+            default:
+              errorMessage = 'An unexpected error occurred. Please try again.';
+          }
         } else {
-          // Use a simpler error message for other errors
-          errorMessage = 'Registration failed: ${e.toString().split(']').last.trim()}';
+          // Generic error for non-Firebase exceptions
+          errorMessage = 'Registration failed. Please check your connection.';
         }
         
         setState(() {
@@ -72,8 +84,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context); // Get theme data
+
     return Scaffold(
-      backgroundColor: Colors.black,
+      // Use theme background color
+      backgroundColor: theme.scaffoldBackgroundColor, 
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -84,91 +99,131 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 Text(
                   'CREATE ACCOUNT',
-                  style: Theme.of(context).textTheme.headlineLarge,
+                  // Use theme headline style
+                  style: theme.textTheme.headlineLarge?.copyWith(color: theme.colorScheme.primary), 
                 ),
                 const SizedBox(height: 40),
                 TextFormField(
-                  decoration: const InputDecoration(
+                  // Use theme's input decoration
+                  decoration: InputDecoration( 
                     labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
-                    labelStyle: TextStyle(color: Colors.greenAccent),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.greenAccent),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.purpleAccent, width: 2),
-                    ),
+                    prefixIcon: Icon(Icons.email, color: theme.colorScheme.primary), // Use theme color
                   ),
-                  style: const TextStyle(color: Colors.white),
+                  // Use theme text style
+                  style: TextStyle(color: theme.colorScheme.onSurface), 
+                  keyboardType: TextInputType.emailAddress,
                   onChanged: (val) => _email = val.trim(),
-                  validator: (val) => val!.isEmpty ? 'Enter an email' : null,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) {
+                      return 'Please enter an email';
+                    }
+                     if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(val)) {
+                       return 'Please enter a valid email address';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Password',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock),
-                    labelStyle: TextStyle(color: Colors.greenAccent),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.greenAccent),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.purpleAccent, width: 2),
+                    prefixIcon: Icon(Icons.lock, color: theme.colorScheme.primary), // Use theme color
+                    // Add suffix icon to toggle password visibility
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        color: theme.colorScheme.primary,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
                     ),
                   ),
-                  style: const TextStyle(color: Colors.white),
-                  obscureText: true,
+                  style: TextStyle(color: theme.colorScheme.onSurface), // Use theme text style
+                  obscureText: !_isPasswordVisible, // Control visibility
                   onChanged: (val) => _password = val,
-                  validator: (val) => val!.length < 6 ? 'Password must be 6+ chars' : null,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) {
+                      return 'Please enter a password';
+                    }
+                    if (val.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Confirm Password',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock_outline),
-                    labelStyle: TextStyle(color: Colors.greenAccent),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.greenAccent),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.purpleAccent, width: 2),
+                    prefixIcon: Icon(Icons.lock_outline, color: theme.colorScheme.primary), // Use theme color
+                     // Add suffix icon to toggle confirm password visibility
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        color: theme.colorScheme.primary,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                        });
+                      },
                     ),
                   ),
-                  style: const TextStyle(color: Colors.white),
-                  obscureText: true,
+                  style: TextStyle(color: theme.colorScheme.onSurface), // Use theme text style
+                  obscureText: !_isConfirmPasswordVisible, // Control visibility
                   onChanged: (val) => _confirmPassword = val,
-                  validator: (val) => val!.length < 6 ? 'Password must be 6+ chars' : null,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) {
+                      return 'Please confirm your password';
+                    }
+                    if (val != _password) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 30),
                 SizedBox(
-                  width: double.infinity,
+                  width: double.infinity, // Make button take full width
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _registerWithEmailAndPassword,
-                    child: Padding(
+                    // Use theme for button styling
+                    style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: _isLoading
-                          ? const CircularProgressIndicator()
-                          : const Text('REGISTER', style: TextStyle(fontSize: 16)),
+                      textStyle: const TextStyle(fontSize: 16),
                     ),
+                    child: _isLoading
+                        // Use theme's progress indicator color
+                        ? SizedBox(
+                            height: 24, // Consistent height for indicator
+                            width: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.onPrimary),
+                            ),
+                          )
+                        : const Text('REGISTER'),
                   ),
                 ),
                 const SizedBox(height: 16),
                 TextButton(
                   onPressed: _isLoading ? null : widget.onSwitchToLogin,
-                  child: const Text(
-                    'ALREADY HAVE AN ACCOUNT? SIGN IN',
-                    style: TextStyle(color: Colors.pinkAccent),
+                   // Use theme for text button styling
+                  style: TextButton.styleFrom(
+                    foregroundColor: theme.colorScheme.secondary, // Use theme color
                   ),
+                  child: const Text('ALREADY HAVE AN ACCOUNT? SIGN IN'),
                 ),
                 if (_error.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 16.0),
                     child: Text(
                       _error,
-                      style: const TextStyle(color: Colors.red, fontSize: 14),
+                      // Use theme error color
+                      style: TextStyle(color: theme.colorScheme.error, fontSize: 14), 
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -179,4 +234,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-} 
+}

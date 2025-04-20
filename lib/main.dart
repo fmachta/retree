@@ -3,12 +3,30 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'firebase_options.dart';
+import 'package:provider/provider.dart'; // Import Provider
+import 'services/auth_service.dart'; // Import AuthService
 import 'screens/auth/auth_wrapper.dart';
 import 'screens/highscores/highscores_screen.dart';
 import 'screens/profile/profile_screen.dart';
+import 'screens/settings/settings_screen.dart'; // Import SettingsScreen
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Lock orientation to portrait
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
+  // Make status bar transparent and draw app behind it
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent, // Make status bar transparent
+    systemNavigationBarColor: Colors.transparent, // Optional: Make navigation bar transparent
+    statusBarIconBrightness: Brightness.light, // Use light icons for dark background
+    systemNavigationBarIconBrightness: Brightness.light, // Optional: Use light icons for dark background
+  ));
   
   // Flag to track Firebase initialization
   bool firebaseInitialized = false;
@@ -54,8 +72,14 @@ void main() async {
     print('PlatformDispatcher error: $error\n$stack');
     return true;
   };
-  
-  runApp(MyApp(firebaseInitialized: firebaseInitialized));
+
+  // Wrap MyApp with Provider for AuthService
+  runApp(
+    Provider<AuthService>(
+      create: (_) => AuthService(),
+      child: MyApp(firebaseInitialized: firebaseInitialized),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -124,6 +148,7 @@ class MyApp extends StatelessWidget {
         '/auth': (context) => AuthWrapper(requireAuth: true, firebaseInitialized: firebaseInitialized),
         '/highscores': (context) => HighScoresScreen(firebaseInitialized: firebaseInitialized),
         '/profile': (context) => const ProfileScreen(),
+        '/settings': (context) => const SettingsScreen(), // Add settings route
       },
       debugShowCheckedModeBanner: false,
     );
