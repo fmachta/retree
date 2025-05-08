@@ -278,10 +278,10 @@
       "languageVersion": "3.6"
     }
   ],
-  "generated": "2025-04-19T01:45:04.188385Z",
+  "generated": "2025-05-06T17:00:36.550361Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///Users/ferasmachta/Flutter/flutter",
-  "flutterVersion": "3.29.2",
+  "flutterVersion": "3.29.3",
   "pubCache": "file:///Users/ferasmachta/.pub-cache"
 }

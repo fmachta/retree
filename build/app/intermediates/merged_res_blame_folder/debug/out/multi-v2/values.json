@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.retree.app-mergeDebugResources-33:/values/values.xml",
+            "outputFile": "com.machta.retree.app-mergeDebugResources-33:/values/values.xml",
             "map": [
                 {
                     "source": "/Users/ferasmachta/.gradle/caches/transforms-3/613da8d66e01d12d1ca11b9d11e5c7e0/transformed/jetified-window-1.2.0/res/values/values.xml",

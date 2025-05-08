@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -56,6 +57,48 @@ class AuthService {
     } catch (e) {
       print('Error signing out: $e');
       rethrow; // Rethrow to allow handling in UI
+    }
+  }
+
+  // Delete user account
+  Future<void> deleteAccount() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception("No user logged in to delete.");
+    }
+
+    try {
+      // Attempt to delete the user from Firebase Authentication
+      await user.delete();
+      print('Firebase Auth user deleted successfully.');
+
+      // Optionally: Delete associated data (e.g., Firestore document)
+      // It's good practice to handle potential errors here too
+      try {
+        final firestore = FirebaseFirestore.instance; // Get Firestore instance
+        await firestore.collection('users').doc(user.uid).delete();
+        print('Firestore user document deleted successfully.');
+      } catch (firestoreError) {
+        print('Error deleting Firestore user data: $firestoreError');
+        // Decide how to handle this: maybe rethrow, maybe log, maybe ignore
+        // For now, just printing the error. The Auth user is already deleted.
+      }
+
+    } on FirebaseAuthException catch (e) {
+      print('Error deleting Firebase Auth user: ${e.code} - ${e.message}');
+      if (e.code == 'requires-recent-login') {
+        // This error means the user needs to re-authenticate before deletion.
+        // You should prompt the user to log in again.
+        // For simplicity here, we rethrow a specific exception or message.
+        throw Exception(
+            'This operation requires recent authentication. Please log out and log back in before deleting your account.');
+      }
+      // Rethrow other Firebase Auth exceptions
+      rethrow;
+    } catch (e) {
+      print('An unexpected error occurred during account deletion: $e');
+      // Rethrow general exceptions
+      rethrow;
     }
   }
 

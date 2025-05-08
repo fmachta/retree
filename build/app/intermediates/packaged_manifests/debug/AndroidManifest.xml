@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.retree"
-    android:versionCode="1"
+    package="com.machta.retree"
+    android:versionCode="2"
     android:versionName="1.0.0" >
 
     <uses-sdk
@@ -32,10 +32,10 @@
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
     <permission
-        android:name="com.example.retree.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:name="com.machta.retree.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.example.retree.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+    <uses-permission android:name="com.machta.retree.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
 
     <application
         android:name="android.app.Application"
@@ -46,7 +46,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="retree" >
         <activity
-            android:name="com.example.retree.MainActivity"
+            android:name="com.machta.retree.MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:exported="true"
             android:hardwareAccelerated="true"
@@ -166,7 +166,7 @@
 
         <provider
             android:name="com.google.firebase.provider.FirebaseInitProvider"
-            android:authorities="com.example.retree.firebaseinitprovider"
+            android:authorities="com.machta.retree.firebaseinitprovider"
             android:directBootAware="true"
             android:exported="false"
             android:initOrder="100" />
@@ -204,7 +204,7 @@
 
         <provider
             android:name="androidx.startup.InitializationProvider"
-            android:authorities="com.example.retree.androidx-startup"
+            android:authorities="com.machta.retree.androidx-startup"
             android:exported="false" >
             <meta-data
                 android:name="androidx.lifecycle.ProcessLifecycleInitializer"

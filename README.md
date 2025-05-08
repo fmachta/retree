@@ -1,6 +1,32 @@
-# retree
+# Retree: A Retro Gaming Experience
 
-A new Flutter project.
+Retree is a Flutter-based mobile application that brings a collection of classic retro games to your fingertips. Relive the nostalgia with pixel-perfect recreations and compete for high scores!
+
+## Features
+
+*   **Classic Games:**
+    *   Breakout
+    *   Pac-Man
+    *   Pong
+    *   Snake
+    *   Space Invaders
+    *   Tetris
+*   **User Accounts:** Sign up and log in to save your progress and high scores (powered by Firebase Authentication).
+*   **High Score Tracking:** Compete with other players and see your name on the leaderboards (using Firebase Firestore).
+*   **User Profiles:** Manage your player profile.
+*   **Settings:** Customize your app experience.
+*   **Retro Theme:** Immersive retro aesthetic with custom fonts and a neon-inspired dark theme.
+
+## Tech Stack
+
+*   **Framework:** Flutter
+*   **Language:** Dart
+*   **Backend:** Firebase (Authentication, Firestore)
+*   **State Management:** Provider
+
+## Available on the App Store
+
+[Download Retree from the App Store](https://apps.apple.com/us/app/retree/id6745189283)
 
 ## Getting Started
 

@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.retree.app-mergeDebugResources-33:/values-night-v8/values-night-v8.xml",
+            "outputFile": "com.machta.retree.app-mergeDebugResources-33:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
                     "source": "/Users/ferasmachta/Documents/GitHub/retree/android/app/src/main/res/values-night/styles.xml",

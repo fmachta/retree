@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.retree.app-mergeDebugResources-33:/values-watch-v20/values-watch-v20.xml",
+            "outputFile": "com.machta.retree.app-mergeDebugResources-33:/values-watch-v20/values-watch-v20.xml",
             "map": [
                 {
                     "source": "/Users/ferasmachta/.gradle/caches/transforms-3/198c4964fde66fb6c16efd2680484e60/transformed/jetified-play-services-auth-20.7.0/res/values-watch-v20/values.xml",

@@ -87,6 +87,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final theme = Theme.of(context); // Get theme data
 
     return Scaffold(
+      // Add an AppBar with a back button to switch to Login view
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          tooltip: 'Back to Sign In',
+          // Use the callback provided by AuthWrapper to switch views
+          onPressed: _isLoading ? null : widget.onSwitchToLogin, 
+        ),
+        title: const Text('Create Account'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        // Adjust icon/text colors based on theme
+        iconTheme: IconThemeData(color: theme.colorScheme.primary), 
+        titleTextStyle: TextStyle( 
+          color: theme.colorScheme.primary, 
+          fontSize: 20, 
+          fontWeight: FontWeight.bold
+        ),
+      ),
       // Use theme background color
       backgroundColor: theme.scaffoldBackgroundColor, 
       body: Center(

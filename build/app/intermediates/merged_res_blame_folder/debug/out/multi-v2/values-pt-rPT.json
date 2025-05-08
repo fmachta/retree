@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.retree.app-mergeDebugResources-33:/values-pt-rPT/values-pt-rPT.xml",
+            "outputFile": "com.machta.retree.app-mergeDebugResources-33:/values-pt-rPT/values-pt-rPT.xml",
             "map": [
                 {
                     "source": "/Users/ferasmachta/.gradle/caches/transforms-3/5bb12097671e673df73790b148f32c17/transformed/core-1.13.1/res/values-pt-rPT/values-pt-rPT.xml",

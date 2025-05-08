@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.retree.app-mergeDebugResources-33:/values-v21/values-v21.xml",
+            "outputFile": "com.machta.retree.app-mergeDebugResources-33:/values-v21/values-v21.xml",
             "map": [
                 {
                     "source": "/Users/ferasmachta/.gradle/caches/transforms-3/aca175c0d182a1e31893d3f754536571/transformed/jetified-credentials-play-services-auth-1.2.0-rc01/res/values-v21/values-v21.xml",

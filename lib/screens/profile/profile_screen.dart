@@ -28,6 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _usernameFormKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   bool _isSavingUsername = false;
+  bool _isDeletingAccount = false; // Add state for deletion loading
 
   @override
   void initState() {
@@ -235,6 +236,94 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  // Method to show the confirmation dialog for account deletion
+  Future<void> _showDeleteConfirmationDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Account?'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to delete your account?'),
+                SizedBox(height: 8),
+                Text(
+                  'This action is irreversible and will permanently delete your account and associated data.',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            // Use a destructive action style for the delete button
+            TextButton(
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text('DELETE'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                _handleAccountDeletion(); // Proceed with deletion
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Method to handle the actual deletion process
+  Future<void> _handleAccountDeletion() async {
+    if (!mounted) return;
+    setState(() {
+      _isDeletingAccount = true; // Show loading indicator
+    });
+
+    try {
+      await _authService.deleteAccount();
+      
+      if (!mounted) return; // Check mounted status again after async operation
+
+      // On success, show message and navigate out
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Account deleted successfully.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      
+      // Navigate back to the root/auth wrapper and remove all previous routes
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const AuthWrapper()), 
+        (Route<dynamic> route) => false, // Remove all routes
+      );
+
+    } catch (e) {
+      if (!mounted) return; // Check mounted status after error
+
+      // Show specific error message (e.g., requires re-authentication)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error deleting account: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDeletingAccount = false; // Hide loading indicator
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentUser = _authService.currentUser; // Get current user status
@@ -426,6 +515,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                 ],
               ),
+            ),
+      // Conditionally display the BottomNavigationBar only when logged in
+      bottomNavigationBar: currentUser == null 
+          ? null // Render nothing if logged out
+          : Padding( // Render the delete button section if logged in
+              padding: const EdgeInsets.all(16.0),
+              child: _isLoadingProfile || _isLoadingScores 
+                  ? const SizedBox.shrink() // Don't show if still loading profile
+                  : _isDeletingAccount 
+                      ? const Center(child: CircularProgressIndicator()) // Show loading indicator while deleting
+                      : TextButton.icon(
+                          onPressed: _showDeleteConfirmationDialog,
+                          icon: const Icon(Icons.delete_forever, color: Colors.red),
+                          label: const Text(
+                            'Delete Account',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            // Add a subtle background or border if desired
+                            // side: BorderSide(color: Colors.red.shade100),
+                          ),
+                        ),
             ),
     );
   }

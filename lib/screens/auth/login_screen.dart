@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 import '../../services/auth_service.dart';
 import './create_username_screen.dart'; // Import the new screen (will be created next)
+import '../start_screen/startscreen.dart'; // Import StartScreen
 
 class LoginScreen extends StatefulWidget {
   final VoidCallback onSwitchToRegister;
@@ -57,16 +58,18 @@ class _LoginScreenState extends State<LoginScreen> {
           // If username exists, the AuthWrapper will handle navigation
         }
       } catch (e) {
-        String errorMessage = 'Login failed';
-        
+        String errorMessage;
+        // Log the error for debugging regardless of type
+        print('Sign-in error: $e'); 
+
         // Use FirebaseAuthException codes for reliable error handling
         if (e is FirebaseAuthException) {
+          errorMessage = 'Login failed'; // Default message
           switch (e.code) {
             case 'user-not-found':
-              errorMessage = 'No user found with this email.';
-              break;
             case 'wrong-password':
-              errorMessage = 'Incorrect password. Please try again.';
+            case 'invalid-credential': // Covers general invalid credential issues
+              errorMessage = 'Invalid email or password. Please try again.';
               break;
             case 'invalid-email':
               errorMessage = 'The email address is badly formatted.';
@@ -75,19 +78,23 @@ class _LoginScreenState extends State<LoginScreen> {
               errorMessage = 'This account has been disabled.';
               break;
             case 'too-many-requests':
-              errorMessage = 'Too many attempts. Please try again later.';
+              errorMessage = 'Too many sign-in attempts. Please try again later.';
               break;
+            // Add other specific codes if needed
             default:
-              errorMessage = 'An unexpected error occurred. Please try again.';
+              // Provide a slightly more specific default for Firebase errors
+              errorMessage = 'An unexpected sign-in error occurred. (Code: ${e.code})'; 
           }
         } else {
-          // Generic error for non-Firebase exceptions
-          errorMessage = 'Login failed. Please check your connection.';
+          // Generic error for non-Firebase exceptions (e.g., network issues)
+          errorMessage = 'Login failed. Please check connection or try again.';
         }
         
-        setState(() {
-          _error = errorMessage;
-        });
+        if (mounted) { // Check if widget is still in the tree
+          setState(() {
+            _error = errorMessage;
+          });
+        }
       } finally {
         if (mounted) {
           setState(() {
@@ -134,6 +141,32 @@ class _LoginScreenState extends State<LoginScreen> {
     final theme = Theme.of(context); // Get theme data
 
     return Scaffold(
+      // Add an AppBar with a MANUAL back button
+      appBar: AppBar(
+        // Explicitly add a leading back button
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back), 
+          tooltip: 'Back to Menu',
+          onPressed: () {
+            // Navigate back to the StartScreen, replacing the current route
+            // This assumes StartScreen is the main menu
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const StartScreen()),
+            );
+          },
+        ),
+        // Optional: Set title or make transparent
+        title: const Text('Sign In'), // Example title
+        backgroundColor: Colors.transparent, // Make AppBar transparent
+        elevation: 0, // Remove shadow
+        // Ensure back button icon color contrasts with background
+        iconTheme: IconThemeData(color: theme.colorScheme.primary), 
+        titleTextStyle: TextStyle( // Ensure title color contrasts
+          color: theme.colorScheme.primary, 
+          fontSize: 20, 
+          fontWeight: FontWeight.bold
+        ),
+      ),
       // Use theme background color
       backgroundColor: theme.scaffoldBackgroundColor, 
       body: Center(
@@ -235,12 +268,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 8),
                 TextButton(
-                  onPressed: _isLoading ? null : widget.onSwitchToRegister,
-                  // Use theme for text button styling
-                  style: TextButton.styleFrom(
-                    foregroundColor: theme.colorScheme.tertiary, // Use a different theme color
+                  onPressed: () => widget.onSwitchToRegister(),
+                  child: Text(
+                    'Register',
+                    style: TextStyle(color: theme.colorScheme.secondary), // Use theme color
                   ),
-                  child: const Text('CREATE ACCOUNT'),
                 ),
                 if (_error.isNotEmpty)
                   Padding(

@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.retree.app-mergeDebugResources-33:/values-hu/values-hu.xml",
+            "outputFile": "com.machta.retree.app-mergeDebugResources-33:/values-hu/values-hu.xml",
             "map": [
                 {
                     "source": "/Users/ferasmachta/.gradle/caches/transforms-3/18647327acd20a59db9686b277e26266/transformed/browser-1.4.0/res/values-hu/values-hu.xml",
